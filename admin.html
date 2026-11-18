@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>K-pop 性格原型测试 (6维专业版)</title>
+<style>
+  /* 保持你之前的 CSS 样式不变，此处省略以节省篇幅，请保留原有的 <style> 内容 */
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; font-family: -apple-system, 'PingFang SC', sans-serif; background: #0a0a0a; color: #fff; min-height: 100vh; overflow: hidden; }
+  .wrap { max-width: 480px; margin: 0 auto; padding: 24px; height: 100vh; display: flex; flex-direction: column; }
+  .hidden { display: none !important; }
+  .hero { text-align: center; padding: 40px 0; }
+  .hero h1 { font-size: 26px; margin: 0 0 12px; background: linear-gradient(135deg, #ff3366, #ff6b9d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero p { color: #888; font-size: 14px; line-height: 1.6; margin: 0 0 30px; }
+  .code-input { width: 100%; padding: 18px; font-size: 26px; letter-spacing: 8px; text-align: center; text-transform: uppercase; border: 2px solid #222; background: #151515; color: #fff; border-radius: 12px; outline: none; }
+  .code-input:focus { border-color: #ff3366; }
+  .btn-primary { width: 100%; padding: 16px; background: linear-gradient(135deg, #ff3366, #ff6b9d); color: #fff; font-weight: bold; border: none; border-radius: 12px; font-size: 17px; cursor: pointer; margin-top: 16px; }
+  .btn-primary:disabled { opacity: 0.5; }
+  .msg { color: #ff4444; font-size: 13px; margin-top: 12px; text-align: center; min-height: 18px; }
+  .gen-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+  .gen-card { background: #151515; border: 1.5px solid #222; border-radius: 12px; padding: 20px 12px; text-align: center; cursor: pointer; transition: 0.2s; }
+  .gen-card:hover { border-color: #ff3366; background: #1a1015; }
+  .gen-card h3 { margin: 0 0 8px; font-size: 16px; color: #ff6b9d; }
+  .gen-card .info-link { display: block; margin-top: 10px; font-size: 11px; color: #ff6b9d; text-decoration: underline; }
+  .quiz-header { display: flex; justify-content: space-between; font-size: 13px; color: #888; margin-bottom: 16px; }
+  .progress { height: 4px; background: #222; border-radius: 2px; overflow: hidden; margin-bottom: 24px; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #ff3366, #ff6b9d); width: 0%; transition: width 0.4s; }
+  .q-text { font-size: 18px; line-height: 1.6; font-weight: 600; margin-bottom: 24px; }
+  .opt { width: 100%; padding: 14px; background: #151515; border: 1.5px solid #222; color: #fff; border-radius: 10px; margin-bottom: 10px; text-align: left; cursor: pointer; font-size: 14px; line-height: 1.5; }
+  .opt:hover { border-color: #ff3366; }
+  .opt.selected { border-color: #ff3366; background: #2a1018; }
+  .quiz-nav { display: flex; gap: 10px; margin-top: 8px; }
+  .btn-secondary { flex: 1; padding: 14px; background: #1a1a1a; color: #fff; border: 1px solid #333; border-radius: 12px; font-size: 15px; cursor: pointer; }
+  .btn-secondary:disabled { opacity: 0.3; cursor: not-allowed; }
+  .result-container { flex: 1; height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; -ms-overflow-style: none; position: relative; }
+  .result-container::-webkit-scrollbar { display: none; }
+  .page-card { min-height: 100%; scroll-snap-align: start; background: #151515; border: 1px solid #2a2a2a; border-radius: 20px; padding: 30px 24px 60px 24px; margin-bottom: 20px; position: relative; display: flex; flex-direction: column; }
+  .page-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #ff3366, #ff6b9d); border-radius: 20px 20px 0 0; }
+  .test-index-tag { position: absolute; top: 15px; right: 15px; background: rgba(255,51,102,0.15); color: #ff6b9d; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+  .a-page-title { font-size: 12px; color: #ff6b9d; letter-spacing: 2px; text-align: center; margin-bottom: 20px; }
+  .a-page-name { font-size: 32px; font-weight: 800; text-align: center; margin: 0 0 10px; background: linear-gradient(135deg, #fff, #ff6b9d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .a-page-desc { font-size: 18px; font-weight: bold; text-align: center; color: #fff; margin: 0 0 20px; }
+  .radar-box { background: #0f0f0f; border-radius: 12px; padding: 20px; margin: 20px 0; text-align: center; flex-shrink: 0; }
+  .radar-box h4 { margin: 0 0 15px; font-size: 14px; color: #ff6b9d; }
+  canvas { max-width: 100%; height: auto; }
+  .a-page-summary { font-size: 14px; color: #aaa; line-height: 1.6; text-align: center; background: rgba(255,51,102,0.05); padding: 12px; border-radius: 8px; border-left: 3px solid #ff3366; }
+  .b-page-desc-large { font-size: 28px; font-weight: 900; text-align: center; color: #fff; margin: 0 0 25px; line-height: 1.3; letter-spacing: 1px; background: linear-gradient(135deg, #fff, #ff6b9d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .b-page-dimensions-list { display: flex; flex-direction: column; gap: 20px; flex: 1; overflow-y: auto; }
+  .b-dim-section { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 16px; border-left: 3px solid #ff3366; }
+  .b-dim-title { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .b-dim-text { font-size: 14px; color: #ccc; line-height: 1.6; }
+  .b-page-name-small { font-size: 13px; text-align: center; color: #555; margin-top: 25px; letter-spacing: 2px; text-transform: uppercase; font-weight: 400; }
+  .c-page-title { font-size: 18px; font-weight: bold; color: #ff6b9d; text-align: center; margin: 0 0 25px; }
+  .dim-block { margin-bottom: 24px; border-bottom: 1px solid #222; padding-bottom: 20px; }
+  .dim-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .dim-header-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+  .dim-name-score { font-size: 15px; font-weight: bold; color: #fff; }
+  .dim-champion { font-size: 14px; font-weight: bold; color: #ff6b9d; }
+  .bar-container { width: 100%; height: 10px; background: transparent; border: 1px solid #ff3366; border-radius: 5px; margin: 10px 0; position: relative; overflow: hidden; }
+  .bar-fill { height: 100%; background: #ff3366; border-radius: 5px; }
+  .dim-desc-text { font-size: 12px; color: #888; line-height: 1.5; margin-top: 8px; }
+  #scrollNav { position: fixed; right: 15px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 15px; z-index: 100; }
+  .scroll-btn { width: 44px; height: 44px; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; opacity: 0; pointer-events: none; transform: scale(0.8); }
+  .scroll-btn.visible { opacity: 1; pointer-events: auto; transform: scale(1); }
+  .scroll-btn:hover { background: rgba(255, 51, 102, 0.25); border-color: #ff3366; }
+  .scroll-btn svg { width: 24px; height: 24px; fill: #fff; }
+  .share-hint { margin-top: auto; padding-top: 20px; text-align: center; border-top: 1px dashed #333; }
+  .share-hint p { color: #ff6b9d; font-size: 14px; font-weight: bold; margin: 0 0 4px; }
+  .share-hint small { color: #666; font-size: 11px; }
+  .poster-footer { text-align: center; font-size: 11px; color: #555; margin-top: 10px; }
+  .status-badge { display: inline-block; padding: 4px 12px; background: rgba(255,51,102,0.15); color: #ff6b9d; border-radius: 20px; font-size: 12px; margin-top: 12px; }
+  .gen-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; justify-content: center; }
+  .gen-tab { padding: 6px 14px; background: #1a1a1a; border: 1px solid #333; border-radius: 20px; font-size: 12px; cursor: pointer; color: #888; transition: 0.2s; }
+  .gen-tab.active { border-color: #ff3366; color: #fff; background: rgba(255,51,102,0.2); }
+  .confirm-box, .calc-box { text-align: center; padding: 50px 0; }
+  .calc-box .spinner { font-size: 50px; margin-bottom: 30px; animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .calc-bar { height: 6px; background: #222; border-radius: 3px; overflow: hidden; margin: 20px 0; }
+  .calc-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #ff3366, #ff6b9d); border-radius: 3px; }
+</style>
+</head>
+<body>
+  <div id="scrollNav" class="hidden">
+    <div class="scroll-btn scroll-up" onclick="scrollPage(-1)" title="上一页"><svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg></div>
+    <div class="scroll-btn scroll-down" onclick="scrollPage(1)" title="下一页"><svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg></div>
+  </div>
+
+  <div class="wrap">
+    <div id="page-input">
+      <div class="hero">
+        <h1>✨ 解锁你的 K-pop 灵魂原型</h1>
+        <p>24 道深度情境题 · 6 维人格精准匹配<br>输入授权码开始测试或查看已生成的档案</p>
+        <input type="text" id="codeInput" class="code-input" maxlength="6" placeholder="输入 6 位授权码" autocomplete="off">
+        <button class="btn-primary" id="checkBtn" onclick="checkCode()">开始测试</button>
+        <div class="msg" id="msg"></div>
+      </div>
+    </div>
+
+    <div id="page-gen" class="hidden">
+      <div class="hero" style="padding:30px 0;">
+        <h1>选择你的测试宇宙</h1>
+        <p>每个宇宙包含该时代最具代表性的 20 位女团原型<br><span id="genRemainHint" style="color:#ff6b9d;"></span></p>
+      </div>
+      <div class="gen-grid">
+        <div class="gen-card" onclick="selectGen('gen1')"><h3>一代 · 世纪末传奇</h3><a href="gen1.html" class="info-link" onclick="event.stopPropagation()">📖 了解该代女团</a></div>
+        <div class="gen-card" onclick="selectGen('gen2')"><h3>二代 · 黄金时代</h3><a href="gen2.html" class="info-link" onclick="event.stopPropagation()">📖 了解该代女团</a></div>
+        <div class="gen-card" onclick="selectGen('gen3')"><h3>三代 · 个性顶流</h3><a href="gen3.html" class="info-link" onclick="event.stopPropagation()">📖 了解该代女团</a></div>
+        <div class="gen-card" onclick="selectGen('gen4')"><h3>四代 · 流量主力</h3><a href="gen4.html" class="info-link" onclick="event.stopPropagation()">📖 了解该代女团</a></div>
+        <div class="gen-card" onclick="selectGen('gen5')"><h3>五代 · 新粉选秀</h3><a href="gen5.html" class="info-link" onclick="event.stopPropagation()">📖 了解该代女团</a></div>
+      </div>
+      <button class="btn-secondary" id="viewResultBtn" style="display:none; margin-top:16px;" onclick="showResultView()">📂 查看已测代际结果</button>
+    </div>
+
+    <div id="page-quiz" class="hidden">
+      <div class="quiz-header"><span>题目 <span id="qNum">1</span> / 24</span><span id="remainHint" style="color:#ff6b9d;"></span></div>
+      <div class="progress"><div class="progress-fill" id="prog"></div></div>
+      <div class="q-text" id="qText"></div>
+      <div id="opts"></div>
+      <div class="quiz-nav">
+        <button class="btn-secondary" id="prevBtn" onclick="prevQuestion()">← 上一题</button>
+        <button class="btn-secondary" id="nextBtn" onclick="nextQuestion()" disabled>下一题 →</button>
+      </div>
+    </div>
+
+    <div id="page-confirm" class="hidden">
+      <div class="confirm-box">
+        <div style="font-size:60px; margin-bottom:20px;">🎯</div>
+        <h2>你已完成全部 24 题</h2>
+        <p style="color:#888; font-size:14px; line-height:1.6; margin:0 0 30px;">系统将解析你的 6 维性格向量，<br>在候选原型中匹配你的本命 Idol。</p>
+        <button class="btn-primary" onclick="startCalc()">开始测算</button>
+        <button class="btn-secondary" style="margin-top:10px;" onclick="backToLastQ()">返回检查答案</button>
+      </div>
+    </div>
+
+    <div id="page-calc" class="hidden">
+      <div class="calc-box">
+        <div class="spinner">💫</div>
+        <h2 style="margin:0 0 10px;">正在生成你的专属档案</h2>
+        <div class="calc-bar"><div class="calc-fill" id="calcFill"></div></div>
+        <div id="calcText" style="color:#ff6b9d; font-size:14px; min-height:20px;">正在解析你的 24 个选择...</div>
+        <div id="calcPct" style="color:#666; font-size:12px; margin-top:8px;">0%</div>
+      </div>
+    </div>
+
+    <div id="page-result" class="hidden">
+      <div class="gen-tabs" id="genTabs"></div>
+      <div class="result-container" id="resultContent"></div>
+      <p style="text-align:center; color:#666; font-size:13px; margin:20px 0;">👆 长按上方卡片保存海报</p>
+      <div id="statusArea" style="text-align:center;"></div>
+      <button class="btn-secondary" style="margin-top:10px;" onclick="location.reload()">返回首页</button>
+    </div>
+  </div>
+
+<script>
+const DIM_NAMES = ['E 能量', 'T 理性', 'D 自律', 'A 野心', 'C 共情', 'S 审美'];
+const DIM_FULL = {
+  E: { name: '能量外放', desc: '你在社交和舞台上的活跃程度。高分代表社牛、舞台疯子；低分代表清冷、内敛。' },
+  T: { name: '理性逻辑', desc: '你处理问题和做决定的方式。高分代表脑性女、冷静规划；低分代表感性、直觉系。' },
+  D: { name: '自律努力', desc: '你对目标的坚持和细节控程度。高分代表拼命三娘、完美主义；低分代表松弛感、天才型。' },
+  A: { name: '野心攻击', desc: '你的竞争意识和掌控欲。高分代表大女主、不怕争议；低分代表佛系、配合度高。' },
+  C: { name: '共情照顾', desc: '你对他人情绪的感知和照顾意愿。高分代表团队太阳、倾听者；低分代表酷、独立。' },
+  S: { name: '独特审美', desc: '你的时尚感与个人风格不可替代性。高分代表时尚Icon、概念消化者；低分代表正统、邻家。' }
+};
+
+// 🚨 此处仅展示 Gen 1 的完整 24 题 + 20 人数据。Gen 2-5 结构完全相同，情境替换为该代特征。
+const questions = {
+  gen1: [
+    { q: "1. 早期打歌节目一位安可时，你通常会？", opts: [{ t: "激动落泪，发表长篇感言感谢公司和粉丝", s: [2, 2, 3, 1, 5, 2] }, { t: "保持优雅微笑，完美呈现最后一支舞", s: [3, 3, 4, 3, 2, 4] }, { t: "和成员们紧紧抱在一起，互相擦眼泪", s: [2, 1, 2, 1, 5, 2] }, { t: "趁机展示高音或舞蹈实力，震撼全场", s: [4, 3, 3, 4, 1, 3] }] },
+    { q: "2. 面对转型演员的机遇，你的态度是？", opts: [{ t: "谨慎选择剧本，追求演技上的完美", s: [2, 4, 4, 3, 2, 3] }, { t: "大胆尝试全新角色，不怕外界争议", s: [4, 2, 2, 4, 3, 4] }, { t: "听从公司安排，配合团队整体步调", s: [2, 3, 4, 2, 3, 2] }, { t: "先休息一段时间，调整状态再出发", s: [1, 3, 2, 1, 3, 2] }] },
+    { q: "3. 团队对专辑概念有严重分歧，你通常？", opts: [{ t: "列出利弊分析，用数据和过往案例说服大家", s: [3, 4, 3, 3, 2, 3] }, { t: "当和事佬，努力找让所有人都满意的方案", s: [2, 2, 3, 1, 5, 2] }, { t: "提出最大胆颠覆的新想法，直接打破僵局", s: [4, 3, 2, 4, 3, 4] }, { t: "支持队长最终决定，全力配合执行到位", s: [3, 3, 4, 2, 3, 2] }] },
+    { q: "4. 面对网络上的 Anti 粉丝（黑粉），你会？", opts: [{ t: "感到难过，但会默默努力用舞台成绩反击", s: [2, 2, 4, 3, 3, 3] }, { t: "完全不在意，甚至觉得是热度", s: [3, 3, 2, 4, 2, 4] }, { t: "让公司发律师函，理性维权", s: [2, 4, 3, 4, 2, 3] }, { t: "在粉丝见面会上温柔回应，感化他们", s: [2, 2, 3, 1, 5, 2] }] },
+    { q: "5. 公司安排你去参加一个早期不擅长的综艺，你会？", opts: [{ t: "提前做功课，努力表现不冷场", s: [3, 3, 4, 3, 2, 3] }, { t: "展现真实的一面，哪怕笨拙也很可爱", s: [4, 1, 2, 2, 3, 3] }, { t: "把机会让给更有综艺感的成员", s: [2, 3, 3, 1, 5, 2] }, { t: "直接拒绝，专注音乐本业", s: [2, 4, 3, 4, 2, 3] }] },
+    { q: "6. 回归期连续熬夜打歌，身体到达极限时，你会？", opts: [{ t: "吞下止痛药，镜头前依然保持完美表情", s: [3, 3, 5, 3, 2, 4] }, { t: "后台抱怨好累，上台瞬间像换了个人爆发", s: [4, 2, 2, 3, 2, 4] }, { t: "担心队友，主动帮她们分担走位递水", s: [2, 2, 3, 1, 5, 2] }, { t: "心里盘算结束后怎么狠狠休息，继续坚持", s: [3, 4, 4, 2, 2, 3] }] },
+    { q: "7. 签售会上粉丝送了奇怪但用心的礼物，你会？", opts: [{ t: "真诚感谢，仔细询问细节", s: [2, 2, 3, 2, 5, 3] }, { t: "大方开玩笑调侃，活跃气氛", s: [4, 2, 2, 3, 2, 4] }, { t: "礼貌微笑，思考如何妥善放置", s: [3, 3, 4, 2, 2, 3] }, { t: "直接惊喜，想出有趣点子回应", s: [4, 4, 2, 3, 3, 4] }] },
+    { q: "8. 突然获得一天完全没行程的假期，你会？", opts: [{ t: "去练习室加练，保持状态不能松懈", s: [2, 3, 5, 3, 2, 3] }, { t: "宅宿舍点外卖追剧，享受绝对个人空间", s: [1, 2, 1, 1, 2, 2] }, { t: "约朋友逛街探店，把行程排得满满", s: [4, 2, 1, 3, 3, 4] }, { t: "整理房间做规划，或学习一项新技能", s: [2, 4, 4, 2, 2, 3] }] },
+    { q: "9. 面对网络恶意评论，你的心态是？", opts: [{ t: "难过，向信任的人倾诉寻求安慰", s: [2, 1, 2, 1, 5, 2] }, { t: "不在意，用更好的舞台成绩反击", s: [4, 4, 4, 4, 2, 4] }, { t: "理性分析来源，必要时交由法务处理", s: [3, 4, 3, 4, 2, 3] }, { t: "幽默自嘲化解，展现大度", s: [4, 3, 2, 3, 3, 4] }] },
+    { q: "10. 综艺导演让你即兴表演，你会？", opts: [{ t: "毫不怯场，立刻接梗制造笑点", s: [4, 2, 1, 3, 2, 4] }, { t: "害羞但努力配合不冷场", s: [2, 2, 3, 2, 3, 2] }, { t: "把话题抛给擅长综艺的成员", s: [2, 3, 3, 1, 5, 2] }, { t: "借机展现隐藏才华（如乐器/高音）", s: [4, 3, 4, 3, 2, 4] }] },
+    { q: "11. 宿舍轮到你打扫卫生，你会？", opts: [{ t: "制定值日表严格执行", s: [2, 4, 5, 3, 2, 3] }, { t: "快速打扫表面", s: [2, 2, 2, 2, 2, 2] }, { t: "边打扫边放音乐", s: [3, 1, 2, 2, 3, 3] }, { t: "主动承担更多", s: [2, 3, 3, 2, 5, 2] }] },
+    { q: "12. 学一支极高难度舞蹈，态度是？", opts: [{ t: "兴奋，挑战高难度", s: [4, 3, 4, 4, 2, 4] }, { t: "感到压力但加倍练习", s: [2, 3, 5, 3, 3, 3] }, { t: "先观察别人找发力方式", s: [3, 4, 3, 2, 2, 3] }, { t: "拉队友一起练习", s: [2, 2, 3, 2, 5, 2] }] },
+    { q: "13. 队友情绪低落时，你会？", opts: [{ t: "默默陪伴递零食", s: [2, 2, 3, 1, 5, 2] }, { t: "带她出去吃顿好的", s: [4, 2, 1, 2, 3, 3] }, { t: "理性分析问题给建议", s: [3, 4, 3, 3, 2, 3] }, { t: "用搞笑行为逗她", s: [4, 1, 2, 3, 3, 4] }] },
+    { q: "14. 自己决定下次概念风格，选？", opts: [{ t: "强烈 Girl Crush", s: [4, 4, 3, 4, 2, 4] }, { t: "优雅高贵艺术感", s: [3, 3, 4, 3, 3, 5] }, { t: "清新活泼元气", s: [4, 1, 2, 2, 3, 3] }, { t: "温暖治愈正能量", s: [2, 2, 3, 1, 5, 2] }] },
+    { q: "15. 演唱会安可环节，倾向于？", opts: [{ t: "尽情互动享受舞台", s: [4, 2, 1, 3, 3, 4] }, { t: "保持专业完美呈现", s: [3, 3, 5, 3, 2, 4] }, { t: "看粉丝队友感动流泪", s: [2, 1, 2, 1, 5, 2] }, { t: "自由奔跑展现放松", s: [4, 2, 2, 2, 2, 3] }] },
+    { q: "16. 面对不适合的人设，你会？", opts: [{ t: "私下沟通表达想法", s: [3, 4, 3, 3, 2, 3] }, { t: "先尝试配合不行再说", s: [2, 3, 3, 2, 3, 2] }, { t: "表面配合加入自己理解", s: [3, 3, 4, 3, 3, 4] }, { t: "委屈但为大局忍受", s: [1, 2, 3, 1, 5, 2] }] },
+    { q: "17. 早期粉丝互动平台更新频率？", opts: [{ t: "每天分享日常碎碎念", s: [4, 1, 2, 2, 3, 3] }, { t: "不定期但每次精心修图", s: [3, 3, 4, 2, 2, 5] }, { t: "主要通知行程回复提问", s: [2, 4, 3, 3, 2, 2] }, { t: "发语音搞怪像聊天", s: [4, 2, 1, 3, 4, 3] }] },
+    { q: "18. 获得一位的瞬间，第一反应？", opts: [{ t: "激动大哭感谢粉丝", s: [3, 1, 2, 2, 5, 2] }, { t: "保持微笑优雅感言", s: [3, 3, 4, 3, 2, 4] }, { t: "尽情欢呼跳跃释放", s: [4, 2, 1, 3, 2, 3] }, { t: "看队友紧紧拥抱", s: [2, 2, 3, 1, 5, 2] }] },
+    { q: "19. 面对不适合的时尚资源，你会？", opts: [{ t: "私下沟通表达想法", s: [3, 4, 3, 3, 2, 4] }, { t: "先尝试配合不行再说", s: [2, 3, 3, 2, 3, 2] }, { t: "表面配合加入自己理解", s: [3, 3, 4, 3, 3, 5] }, { t: "委屈但为大局忍受", s: [1, 2, 3, 1, 5, 2] }] },
+    { q: "20. 团队面临续约危机，你会？", opts: [{ t: "积极沟通，努力留住每个人", s: [2, 2, 3, 2, 5, 2] }, { t: "理性分析，尊重每个人选择", s: [2, 4, 3, 3, 2, 3] }, { t: "自己先决定，再影响他人", s: [3, 3, 3, 4, 2, 4] }, { t: "顺其自然，相信命运", s: [2, 2, 2, 1, 4, 2] }] },
+    { q: "21. 被邀请参加早期真人秀节目，你会？", opts: [{ t: "兴奋，展现真实的一面", s: [4, 2, 2, 3, 3, 4] }, { t: "谨慎，担心暴露太多隐私", s: [2, 4, 3, 2, 3, 3] }, { t: "看节目类型再决定", s: [2, 4, 3, 3, 2, 3] }, { t: "拒绝，专注音乐本业", s: [2, 4, 4, 4, 2, 3] }] },
+    { q: "22. 个人 Solo 成绩不如预期，你会？", opts: [{ t: "难过，但会默默反思改进", s: [2, 2, 3, 2, 4, 3] }, { t: "分析原因，调整策略再出发", s: [2, 4, 4, 4, 2, 3] }, { t: "无所谓，享受过程就好", s: [3, 2, 2, 1, 4, 2] }, { t: "寻求成员和粉丝的支持", s: [2, 2, 3, 1, 5, 2] }] },
+    { q: "23. 回顾早期偶像生涯，最看重什么？", opts: [{ t: "舞台上的辉煌时刻", s: [4, 3, 3, 4, 2, 4] }, { t: "和成员们的珍贵友谊", s: [2, 2, 3, 1, 5, 2] }, { t: "粉丝的支持和陪伴", s: [2, 2, 3, 2, 5, 2] }, { t: "个人成长和蜕变", s: [3, 4, 4, 3, 2, 4] }] },
+    { q: "24. 用一句话总结偶像生涯，希望是？", opts: [{ t: "燃烧自己照亮别人", s: [4, 2, 3, 3, 5, 3] }, { t: "打破规则定义新标准", s: [4, 4, 4, 4, 2, 5] }, { t: "享受舞台找到真实自己", s: [3, 2, 2, 2, 3, 4] }, { t: "做到极致不留遗憾", s: [3, 4, 5, 3, 2, 4] }] }
+  ]
+};
+
+const idols = {
+  gen1: [
+    { name: '李孝利', desc: '国民级性感Icon', summary: '一代里情怀和知名度断层领先的国民级性感偶像。', details: { E: '舞台表现力极强，天生属于聚光灯下。', T: '思维敏捷，懂得在复杂环境中保护自己的节奏。', D: '看似慵懒，实则在专业领域有极高标准。', A: '不屑无谓争斗，但绝不允许别人践踏底线，敢于打破常规。', C: '对认可的人极其温柔，用细腻方式表达关心。', S: '独特个人魅力，不刻意迎合，自带高级时尚感。' }, scores: [85, 60, 65, 80, 50, 90] },
+    { name: '柳真', desc: 'SM初代神颜', summary: 'S.E.S门面，后来演戏也有极高关注度的初代神颜。', details: { E: '亲和力极强，在人群中如沐春风，不张扬。', T: '情商极高处理圆融得体，总能找到平衡点。', D: '默默坚持，转型背后是无数次的打磨。', A: '目标清晰手段柔和，不与人起冲突稳步达成。', C: '总是优先考虑他人感受，是让人安心的存在。', S: '拥有无可挑剔的外貌与温柔气质，正统审美代表。' }, scores: [60, 65, 60, 40, 80, 75] },
+    { name: '尹恩惠', desc: '亚洲顶级演员', summary: '转型演员后凭《宫》《咖啡王子》火遍亚洲的跨界王者。', details: { E: '活泼开朗像个小太阳，在团队中总是带来欢声笑语。', T: '思维灵活善于学习，能快速适应新环境并修正认知。', D: '从青涩起步，用肉眼可见的速度成长，背后是无数次练习。', A: '有着不服输的劲头，在专业上敢于争取展现野心。', C: '懂得感恩珍惜团队情谊，总能在细节处照顾前辈队友。', S: '风格多变，能完美消化各种概念与角色。' }, scores: [75, 60, 70, 65, 70, 80] },
+    { name: '简美妍', desc: '活跃的个人活动家', summary: '一代里个人活动较活跃，solo和综艺都有话题。', details: { E: '表现欲强，敢于展现最真实的自己。', T: '看待问题角度独特，不随波逐流。', D: '对美和细节有偏执追求，付出极大自律。', A: '强大自信且不惧争议，敢于做话题中心。', C: '看似高冷，实则对认可的人极其护短。', S: '拥有独特审美与强烈个人风格，时尚感前卫。' }, scores: [70, 55, 65, 75, 45, 85] },
+    { name: 'Bada', desc: 'S.E.S主唱队长', summary: 'solo和音乐剧活动持续，情怀加成极高的主唱队长。', details: { E: '舞台光芒四射，私下却偏向安静内敛，反差迷人。', T: '极强音乐感知与理性分析，精准把握平衡。', D: '业务标准极高，为完美舞台反复练习。', A: '内心强大，压力转化为动力，用作品说话。', C: '情感细腻歌声充满故事，用艺术连接情感。', S: '艺术气质浓厚，对音乐有独特见解。' }, scores: [65, 70, 75, 60, 75, 80] },
+    { name: '李姬珍', desc: '一代老粉记忆点', summary: 'Baby V.O.X成员，一代老粉记忆点深。', details: { E: '偏向内敛稳重，关键时刻挺身而出。', T: '逻辑分析能力强，冷静拆解危机。', D: '典型的自律者，用坚韧诠释责任。', A: '野心内敛，只在乎守护珍视的人。', C: '极强共情力，默默观察并给予温暖支持。', S: '风格正统，给人踏实可靠的感觉。' }, scores: [50, 65, 70, 45, 80, 60] },
+    { name: '沈恩珍', desc: '综艺曝光维持者', summary: '综艺和活动曝光维持了热度的活跃成员。', details: { E: '开朗活泼综艺感极强，调节气氛带来欢乐。', T: '思维灵活善于变通，在困境中找到出路。', D: '经历过低谷从未放弃，用坚持诠释逆袭。', A: '不服输的劲头，即使不被看好也要证明自己。', C: '真诚善良懂得感恩，总能在细节处照顾他人。', S: '风格亲民，容易拉近与大众的距离。' }, scores: [80, 50, 60, 65, 75, 65] },
+    { name: '金EZ', desc: '资历老队长', summary: 'Baby V.O.X队长，一代团里资历老。', details: { E: '精力充沛行动力极强，冲在最前面带动气氛。', T: '逻辑清晰规划能力强，井井有条安排事务。', D: '公认的拼命三娘，自律到令人发指。', A: '不服输的韧劲，面对困难从不退缩。', C: '像大姐姐一样照顾队友，温暖又可靠。', S: '风格稳重，具有领导者的气场。' }, scores: [70, 75, 80, 70, 85, 65] },
+    { name: 'Shoo', desc: '育儿话题新闻常客', summary: '后来结婚育儿话题也上过新闻的S.E.S成员。', details: { E: '亲和力极强，笑容具有治愈力，在社交中如沐春风。', T: '情商极高，处理问题圆融得体，能在复杂关系中找到平衡。', D: '自律且坚持，转型背后是数年如一日的台词与表演打磨。', A: '目标清晰但手段柔和，不与人起冲突，稳步达成规划。', C: '温柔善良，总是优先考虑他人感受，是让人安心的定海神针。', S: '温柔优雅，具有传统女性的美感。' }, scores: [60, 60, 65, 40, 90, 70] },
+    { name: 'Eugene', desc: '柳真(单独榜单)', summary: '部分榜单会单独列出的高辨识度成员。', details: { E: '偏向高冷内敛，不擅长无效社交，只在专业领域展现光芒。', T: '极其理性看问题一针见血，不被情绪左右，是冷静大脑。', D: '对专业有着极高追求，为了一个细节可以反复练习力求完美。', A: '不在乎外界评价，只专注自我提升，用实力说话。', C: '看似冷漠，实则内心细腻，会用自己独特的方式默默关心。', S: '高冷理性，具有独特的清冷美感。' }, scores: [45, 80, 70, 55, 50, 85] },
+    { name: '李真', desc: 'Fin.K.L气质代表', summary: '颜值和气质在一代里有极高辨识度的成员。', details: { E: '自信大方敢于展现优势，是最耀眼的存在。', T: '直率坦诚看问题直接，不拐弯抹角。', D: '对身材管理极其严格，用极度自律换来曲线。', A: '极强自信不畏惧他人眼光，敢于做自己。', C: '看似高冷实则内心柔软，对朋友极其仗义。', S: '颜值讨论多，具有独特的时尚敏锐度。' }, scores: [75, 55, 75, 70, 60, 90] },
+    { name: '玉珠贤', desc: '音乐剧领域发展好', summary: 'Fin.K.L主唱，音乐剧领域发展极好。', details: { E: '情感丰富表达直接，是情绪放大器。', T: '偏向感性思维，依赖直觉和艺术感知。', D: '在热爱的领域极其专注，反复打磨。', A: '性格温和，倾向于用柔和方式化解矛盾。', C: '顶级共情能力，用声音和存在治愈人心。', S: '艺术气息浓厚，对舞台有独特理解。' }, scores: [65, 40, 70, 30, 85, 80] },
+    { name: '朴珠贤', desc: '综艺持续曝光', summary: 'Fin.K.L成员，综艺和活动有持续曝光。', details: { E: '活泼开朗，像个小太阳，在团队中总是带来欢声笑语。', T: '思维灵活，善于学习，能快速适应新环境。', D: '从青涩起步，背后是无数次练习与突破。', A: '不服输，在专业上敢于争取展现野心。', C: '懂得感恩，总能在细节处照顾前辈队友。', S: '风格多变，能迅速适应不同概念。' }, scores: [80, 50, 65, 60, 75, 70] },
+    { name: '李秀英', desc: '一代solo女歌手', summary: '一代 solo 女歌手，常被纳入一代女 idol 讨论。', details: { E: '天生属于舞台，拥有极强的表现力和控场能力。', T: '思维国际化，视野开阔，做决策果断且极具前瞻性。', D: '对专业要求严苛，为了完美舞台可以付出超乎常人的努力。', A: '拥有极强的野心和攻击性，敢于挑战权威。', C: '看似高冷霸气，实则对团队极其护短。', S: '气场强大，具有女王般的时尚表现力。' }, scores: [85, 70, 80, 85, 55, 85] },
+    { name: '严正化', desc: '一代solo代表', summary: '一代 solo 代表，虽偏歌手，但 idol 讨论常带她。', details: { E: '真实不做作，敢于展现最真实的自我，不迎合大众。', T: '思维跳跃充满艺术气息，看问题角度独特。', D: '在热爱的艺术领域极其专注，愿为美付出一切。', A: '极强反叛精神，敢于挑战世俗眼光。', C: '内心柔软善良对世界充满爱，温暖身边的人。', S: '极具前卫艺术感，是时尚界的先锋。' }, scores: [75, 60, 70, 80, 65, 95] },
+    { name: '金贤正', desc: '老粉情怀位置', summary: '一代女团成员，老粉情怀里有位置。', details: { E: '看似可爱无害，实则拥有惊人爆发力。', T: '超越年龄的成熟与理性，保持清醒头脑。', D: '默默努力不声张，日复一日打磨实力。', A: '不在乎名利，自有不可侵犯的底线。', C: '温柔细腻善于倾听，是极好的倾听者。', S: '风格清新，具有邻家女孩般的亲和力。' }, scores: [60, 65, 65, 40, 80, 65] },
+    { name: '韩恩贞', desc: '后续演戏有曝光', summary: '一代女团成员，后续演戏有曝光。', details: { E: '情感丰富，表达直接，在社交中容易与人产生共鸣。', T: '偏向感性思维，做决定时更依赖直觉和内心感受。', D: '在自己热爱的领域极其专注，愿意为了一首好歌反复打磨。', A: '性格温和，不喜欢激烈的竞争，更倾向于用柔和方式化解矛盾。', C: '拥有顶级的共情能力，能敏锐捕捉他人的情绪变化。', S: '温柔治愈，具有传统的东方美感。' }, scores: [55, 45, 60, 35, 90, 70] },
+    { name: '蔡丽娜', desc: '活动期短情怀在', summary: '一代女团成员，活动期短但情怀在。', details: { E: '偏向高冷内敛，不擅长也不屑于无效社交。', T: '极其理性，看问题一针见血，不被情绪左右。', D: '对专业有着极高的追求，为了一个动作可以反复练习。', A: '不在乎外界评价，只专注自我提升。', C: '看似冷漠，实则内心细腻，会用自己独特的方式默默关心。', S: '清冷理性，具有独特的疏离美感。' }, scores: [40, 80, 70, 50, 60, 80] },
+    { name: '朴美善', desc: '综艺方向发展', summary: '一代女团成员，综艺方向发展。', details: { E: '开朗活泼，综艺感极强，在团队中总是那个调节气氛的人。', T: '思维灵活，善于变通，能在困境中找到出路。', D: '经历过低谷，但从未放弃，用日复一日的坚持诠释逆袭。', A: '有着不服输的劲头，即使不被看好也要努力证明自己。', C: '真诚善良，懂得感恩，总能在细节处照顾他人。', S: '亲民接地气，具有独特的喜剧时尚感。' }, scores: [85, 55, 65, 70, 80, 75] },
+    { name: '具荷拉', desc: '情怀讨论度极高', summary: 'Kara成员，去世后情怀和讨论度极高。', details: { E: '精力充沛，行动力极强，在团队中总是冲在最前面。', T: '逻辑清晰，规划能力强，能井井有条地安排事务。', D: '公认的拼命三娘，自律到令人发指。', A: '有着不服输的韧劲，面对困难从不退缩。', C: '像大姐姐一样照顾队友，事无巨细，温暖又可靠。', S: '风格多变，具有极强的舞台消化能力。' }, scores: [75, 65, 85, 75, 85, 80] }
+  ]
+};
+
+const GEN_NAMES = { gen1: '一代', gen2: '二代', gen3: '三代', gen4: '四代', gen5: '五代' };
+let currentCode = '', currentGen = '', remaining = 0, serverResults = [], currentHistoryIndex = 0, answers = new Array(24).fill(null), currentQ = 0;
+
+function show(id) {
+  document.querySelectorAll('.wrap > div').forEach(d => d.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  const scrollNav = document.getElementById('scrollNav');
+  if (id === 'page-result') { scrollNav.classList.remove('hidden'); setTimeout(initScrollButtons, 100); } 
+  else { scrollNav.classList.add('hidden'); }
+}
+function showMsg(text) { document.getElementById('msg').innerText = text; }
+
+async function checkCode() {
+  const code = document.getElementById('codeInput').value.trim().toUpperCase();
+  if (code.length !== 6) return showMsg('请输入完整的 6 位授权码');
+  const btn = document.getElementById('checkBtn');
+  btn.disabled = true; btn.innerText = '验证中...'; showMsg('');
+  try {
+    const res = await fetch('/api/check', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code }) });
+    const contentType = res.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) throw new Error("后端未正常响应");
+    const data = await res.json();
+    if (data.error) { showMsg(data.error); btn.disabled = false; btn.innerText = '开始测试'; return; }
+    currentCode = code;
+    remaining = data.remaining;
+    serverResults = Array.isArray(data.results) ? data.results : [];
+    if (remaining > 0) {
+      document.getElementById('genRemainHint').innerText = `剩余 ${remaining} 次测试机会`;
+      document.getElementById('viewResultBtn').style.display = serverResults.length > 0 ? 'block' : 'none';
+      show('page-gen');
+    } else {
+      if (serverResults.length > 0) { currentHistoryIndex = serverResults.length - 1; showResultView(); } 
+      else { showMsg('该授权码测试次数已用完，且无历史记录'); btn.disabled = false; btn.innerText = '开始测试'; }
+    }
+  } catch (e) { console.error(e); showMsg('请求失败: ' + e.message); btn.disabled = false; btn.innerText = '开始测试'; }
+}
+
+function selectGen(gen) {
+  if (remaining <= 0) return alert('测试次数已用完，无法再次测试');
+  if (!questions[gen]) return alert('该代际题目正在筹备中，请先测试一代！'); // 临时保护
+  currentGen = gen; answers = new Array(24).fill(null); currentQ = 0;
+  document.getElementById('remainHint').innerText = `剩余 ${remaining} 次`;
+  show('page-quiz'); renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[currentGen][currentQ];
+  document.getElementById('qNum').innerText = currentQ + 1;
+  document.getElementById('qText').innerText = q.q;
+  document.getElementById('prog').style.width = `${(currentQ / 24) * 100}%`;
+  document.getElementById('prevBtn').disabled = (currentQ === 0);
+  document.getElementById('nextBtn').disabled = (answers[currentQ] === null);
+  const container = document.getElementById('opts'); container.innerHTML = '';
+  q.opts.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt' + (answers[currentQ] === idx ? ' selected' : '');
+    btn.innerText = opt.t; btn.onclick = () => selectOption(idx);
+    container.appendChild(btn);
+  });
+}
+
+function selectOption(idx) { answers[currentQ] = idx; renderQuestion(); }
+function prevQuestion() { if (currentQ > 0) { currentQ--; renderQuestion(); } }
+function nextQuestion() { if (answers[currentQ] === null) return; currentQ++; if (currentQ < 24) renderQuestion(); else show('page-confirm'); }
+function backToLastQ() { currentQ = 23; document.getElementById('remainHint').innerText = `剩余 ${remaining} 次`; show('page-quiz'); renderQuestion(); }
+
+function startCalc() {
+  show('page-calc');
+  const fill = document.getElementById('calcFill'), pct = document.getElementById('calcPct'), txt = document.getElementById('calcText');
+  const steps = ['正在解析你的 24 个选择...', '构建 6 维性格向量场...', '扫描候选原型人格图谱...', '计算多维空间共振频率...', '生成专属档案海报...'];
+  let p = 0, lastSi = -1;
+  fill.style.width = '0%'; pct.innerText = '0%'; txt.innerText = steps[0];
+  const iv = setInterval(() => {
+    p += 100 / 30;
+    if (p >= 100) { p = 100; clearInterval(iv); fill.style.width = '100%'; pct.innerText = '100%'; setTimeout(submitResult, 300); return; }
+    fill.style.width = p + '%'; pct.innerText = Math.floor(p) + '%';
+    const si = Math.min(steps.length - 1, Math.floor(p / 100 * steps.length));
+    if (si !== lastSi) { txt.innerText = steps[si]; lastSi = si; }
+  }, 100);
+}
+
+function calcScores() {
+  const s = [0, 0, 0, 0, 0, 0];
+  answers.forEach((idx, i) => { if (idx != null) { const opt = questions[currentGen][i].opts[idx]; for (let j = 0; j < 6; j++) s[j] += opt.s[j]; } });
+  return s;
+}
+
+async function submitResult() {
+  const userScores = calcScores();
+  let bestMatch = idols[currentGen][0], minDiff = Infinity;
+  idols[currentGen].forEach(idol => {
+    let diff = 0; for (let i = 0; i < 6; i++) diff += Math.pow(userScores[i] - idol.scores[i], 2);
+    if (diff < minDiff) { minDiff = diff; bestMatch = idol; }
+  });
+  const dimChampions = [];
+  for (let i = 0; i < 6; i++) {
+    let bestIdol = idols[currentGen][0], minD = Infinity;
+    idols[currentGen].forEach(idol => { const d = Math.abs(userScores[i] - idol.scores[i]); if (d < minD) { minD = d; bestIdol = idol; } });
+    dimChampions.push(bestIdol);
+  }
+  const resultData = { name: bestMatch.name, desc: bestMatch.desc, summary: bestMatch.summary, details: bestMatch.details, scores: userScores, dimChampions: dimChampions.map(id => id.name), matched_at: new Date().toISOString() };
+  try {
+    const res = await fetch('/api/save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: currentCode, gen: currentGen, resultData }) });
+    const contentType = res.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) throw new Error("后端保存失败 (请检查 KV 绑定)");
+    const data = await res.json();
+    if (data.success) { remaining = data.remaining; serverResults.push({ gen: currentGen, result: data.result }); showResultView(); } 
+    else { alert('保存失败：' + data.error); location.reload(); }
+  } catch (e) { console.error("Save API Error:", e); alert('请求失败: ' + e.message + '\n\n💡 提示'); location.reload(); }
+}
+
+function showResultView() {
+  currentHistoryIndex = serverResults.length - 1; renderTabs(); renderCurrentHistory();
+  const statusArea = document.getElementById('statusArea');
+  if (remaining > 0) { statusArea.innerHTML = `<div class="status-badge">剩余 ${remaining} 次测试机会</div><br><button class="btn-primary" style="margin-top:16px;" onclick="show('page-gen')">继续测试其他代际</button><button class="btn-secondary" style="margin-top:10px;" onclick="location.reload()">返回首页</button>`; } 
+  else { statusArea.innerHTML = `<div class="status-badge">测试次数已用完 · 最终档案</div><br><button class="btn-secondary" style="margin-top:16px;" onclick="location.reload()">返回首页</button>`; }
+  show('page-result');
+}
+
+function renderTabs() {
+  const tabs = document.getElementById('genTabs'); tabs.innerHTML = '';
+  if (serverResults.length <= 1) return;
+  serverResults.forEach((record, index) => {
+    const t = document.createElement('div');
+    t.className = 'gen-tab' + (index === currentHistoryIndex ? ' active' : '');
+    t.innerText = `第 ${index + 1} 次 (${GEN_NAMES[record.gen] || record.gen})`;
+    t.onclick = () => { currentHistoryIndex = index; renderTabs(); renderCurrentHistory(); document.querySelector('.result-container').scrollTop = 0; };
+    tabs.appendChild(t);
+  });
+}
+
+function renderCurrentHistory() {
+  const container = document.getElementById('resultContent'); container.innerHTML = '';
+  const record = serverResults[currentHistoryIndex], r = record.result;
+  const dimKeys = ['E', 'T', 'D', 'A', 'C', 'S'], maxScore = 120; // 24题 * 5分(假设最高5分，实际按数据调整，此处示例为120)
+  let bPageHtml = '';
+  if (r.details) {
+    bPageHtml = `<div class="b-page-dimensions-list">
+      <div class="b-dim-section"><div class="b-dim-title">⚡ ${DIM_FULL.E.name}</div><div class="b-dim-text">${r.details.E}</div></div>
+      <div class="b-dim-section"><div class="b-dim-title">🧠 ${DIM_FULL.T.name}</div><div class="b-dim-text">${r.details.T}</div></div>
+      <div class="b-dim-section"><div class="b-dim-title">🎯 ${DIM_FULL.D.name}</div><div class="b-dim-text">${r.details.D}</div></div>
+      <div class="b-dim-section"><div class="b-dim-title">🔥 ${DIM_FULL.A.name}</div><div class="b-dim-text">${r.details.A}</div></div>
+      <div class="b-dim-section"><div class="b-dim-title">💖 ${DIM_FULL.C.name}</div><div class="b-dim-text">${r.details.C}</div></div>
+      <div class="b-dim-section"><div class="b-dim-title">🎨 ${DIM_FULL.S.name}</div><div class="b-dim-text">${r.details.S}</div></div>
+    </div><div class="b-page-name-small">—— 匹配原型：${r.name} ——</div>`;
+  }
+  let dimHtml = '';
+  for (let i = 0; i < 6; i++) {
+    const key = dimKeys[i], full = DIM_FULL[key], championName = r.dimChampions ? r.dimChampions[i] : '未知', score = r.scores[i], percent = (score / maxScore) * 100;
+    let dimDetailText = (r.details && r.details[key]) ? r.details[key] : full.desc;
+    dimHtml += `<div class="dim-block"><div class="dim-header-row"><span class="dim-name-score">${full.name} (得分: ${score})</span><span class="dim-champion">最像: ${championName}</span></div><div class="bar-container"><div class="bar-fill" style="width: ${percent}%;"></div></div><div class="dim-desc-text">💡 ${dimDetailText}</div></div>`;
+  }
+  container.innerHTML = `<div class="page-card"><div class="test-index-tag">第 ${currentHistoryIndex + 1} 次测试</div><div class="a-page-title">K-POP PERSONALITY ARCHIVE</div><h2 class="a-page-name">${r.name}</h2><div class="a-page-desc">${r.desc}</div><div class="radar-box"><h4>📊 六维人格雷达图</h4><canvas id="radarCanvas" width="340" height="340"></canvas></div><div class="a-page-summary"><strong>🔍 匹配依据：</strong>${r.summary || generateFallbackSummary(r.scores, r)}</div><div class="share-hint"><p>📸 长按上方区域截图保存</p><small>分享给朋友，看看是不是同一种灵魂</small></div></div><div class="page-card"><div class="test-index-tag">第 ${currentHistoryIndex + 1} 次测试</div><div class="b-page-desc-large">${r.desc}</div>${bPageHtml}<div class="share-hint"><p>📸 长按上方区域截图保存</p><small>你的独特魅力，值得被看见</small></div></div><div class="page-card"><div class="test-index-tag">第 ${currentHistoryIndex + 1} 次测试</div><div class="c-page-title">🧬 六维深度解析</div>${dimHtml}<div class="share-hint"><p>📸 长按上方区域截图保存</p><small>本档案基于你的选择生成 · 仅供趣味探索</small></div></div>`;
+  setTimeout(() => { const canvas = document.getElementById('radarCanvas'); if (canvas) drawRadarOnCanvas(canvas, r.scores, r.dimChampions); }, 100);
+}
+
+function initScrollButtons() {
+  const container = document.querySelector('.result-container'), upBtn = document.querySelector('.scroll-up'), downBtn = document.querySelector('.scroll-down');
+  if (!container || !upBtn || !downBtn) return;
+  const checkScroll = () => {
+    const scrollTop = container.scrollTop, scrollHeight = container.scrollHeight, clientHeight = container.clientHeight;
+    if (scrollTop > 50) upBtn.classList.add('visible'); else upBtn.classList.remove('visible');
+    if (scrollTop < scrollHeight - clientHeight - 50) downBtn.classList.add('visible'); else downBtn.classList.remove('visible');
+  };
+  container.addEventListener('scroll', checkScroll); checkScroll();
+}
+function scrollPage(direction) { const container = document.querySelector('.result-container'); container.scrollBy({ top: direction * container.clientHeight, behavior: 'smooth' }); }
+
+function generateFallbackSummary(scores, idol) { const maxDimIdx = scores.indexOf(Math.max(...scores)); return `你在${DIM_FULL[['E','T','D','A','C','S'][maxDimIdx]].name}维度表现突出，${idol.desc}，是团队中不可或缺的独特存在。`; }
+
+function drawRadarOnCanvas(canvas, scores, champions) {
+  if (!canvas || !scores) return;
+  const ctx = canvas.getContext('2d'), w = canvas.width, h = canvas.height, cx = w / 2, cy = h / 2, R = 75, maxScore = 120; // 假设最高120分
+  ctx.clearRect(0, 0, w, h);
+  for (let level = 1; level <= 5; level++) {
+    const r = (R / 5) * level; ctx.beginPath();
+    for (let i = 0; i < 6; i++) { const a = (Math.PI * 2 / 6) * i - Math.PI / 2; const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
+    ctx.closePath(); ctx.strokeStyle = '#333'; ctx.lineWidth = 1; ctx.stroke();
+  }
+  for (let i = 0; i < 6; i++) { const a = (Math.PI * 2 / 6) * i - Math.PI / 2; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + R * Math.cos(a), cy + R * Math.sin(a)); ctx.strokeStyle = '#444'; ctx.stroke(); }
+  const points = []; ctx.beginPath();
+  for (let i = 0; i < 6; i++) { const a = (Math.PI * 2 / 6) * i - Math.PI / 2; const r = (scores[i] / maxScore) * R; const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a); points.push({ x, y, a }); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
+  ctx.closePath(); ctx.fillStyle = 'rgba(255,51,102,0.3)'; ctx.fill(); ctx.strokeStyle = '#ff3366'; ctx.lineWidth = 2; ctx.stroke();
+  ctx.textBaseline = 'middle';
+  for (let i = 0; i < 6; i++) {
+    const p = points[i]; ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI * 2); ctx.fillStyle = '#ff3366'; ctx.fill();
+    const cos = Math.cos(p.a); ctx.textAlign = (Math.abs(cos) < 0.2) ? 'center' : (cos > 0 ? 'right' : 'left');
+    const tx = cx + (R + 18) * cos, ty = cy + (R + 18) * Math.sin(p.a);
+    ctx.font = 'bold 12px sans-serif'; ctx.fillStyle = '#ff6b9d'; ctx.fillText(DIM_NAMES[i], tx, ty - 8);
+    ctx.fillStyle = '#fff'; ctx.fillText(scores[i] + '分', tx, ty + 8);
+    const nm = (champions && champions[i]) ? String(champions[i]).split(' ')[0] : '';
+    if (nm) { const tx2 = cx + (R + 36) * cos, ty2 = cy + (R + 36) * Math.sin(p.a); ctx.font = '10px sans-serif'; ctx.fillStyle = '#888'; ctx.fillText(nm, tx2, ty2); }
+  }
+}
+
+document.getElementById('codeInput').addEventListener('input', function(e) { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); });
+document.getElementById('codeInput').addEventListener('keypress', function(e) { if (e.key === 'Enter') checkCode(); });
+</script>
+</body>
+</html>
