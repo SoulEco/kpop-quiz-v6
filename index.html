@@ -10,7 +10,6 @@
   .wrap { max-width: 480px; margin: 0 auto; padding: 24px; height: 100vh; display: flex; flex-direction: column; }
   .hidden { display: none !important; }
   
-  /* 基础页面样式 */
   .hero { text-align: center; padding: 40px 0; }
   .hero h1 { font-size: 26px; margin: 0 0 12px; background: linear-gradient(135deg, #ff3366, #ff6b9d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   .hero p { color: #888; font-size: 14px; line-height: 1.6; margin: 0 0 30px; }
@@ -37,51 +36,28 @@
   .btn-secondary { flex: 1; padding: 14px; background: #1a1a1a; color: #fff; border: 1px solid #333; border-radius: 12px; font-size: 15px; cursor: pointer; }
   .btn-secondary:disabled { opacity: 0.3; cursor: not-allowed; }
   
-  /* 🚨 结果页：5页垂直滚动布局，确保可滑动 */
-  .result-container { 
-    flex: 1; 
-    height: 100%; 
-    overflow-y: scroll; 
-    scroll-snap-type: y mandatory; 
-    scrollbar-width: none; 
-    -ms-overflow-style: none;
-    position: relative; 
-  }
+  .result-container { flex: 1; height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; -ms-overflow-style: none; position: relative; }
   .result-container::-webkit-scrollbar { display: none; }
   
-  .page-card { 
-    min-height: 100%; /* 确保每页至少占满一屏 */
-    scroll-snap-align: start; 
-    background: #151515; 
-    border: 1px solid #2a2a2a; 
-    border-radius: 20px; 
-    padding: 30px 24px 60px 24px; 
-    margin-bottom: 20px; 
-    position: relative; 
-    display: flex; 
-    flex-direction: column; 
-    overflow: hidden; 
-  }
+  .page-card { min-height: 100%; scroll-snap-align: start; background: #151515; border: 1px solid #2a2a2a; border-radius: 20px; padding: 30px 24px 60px 24px; margin-bottom: 20px; position: relative; display: flex; flex-direction: column; overflow: hidden; }
   .page-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #ff3366, #ff6b9d); border-radius: 20px 20px 0 0; }
   .test-index-tag { position: absolute; top: 15px; right: 15px; background: rgba(255,51,102,0.15); color: #ff6b9d; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; }
   
-  .a-page-title { font-size: 12px; color: #ff6b9d; letter-spacing: 2px; text-align: center; margin-bottom: 20px; margin-top: 10px; }
-  .a-page-name { font-size: 32px; font-weight: 800; text-align: center; margin: 0 0 10px; background: linear-gradient(135deg, #fff, #ff6b9d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .a-page-desc { font-size: 18px; font-weight: bold; text-align: center; color: #fff; margin: 0 0 20px; }
+  .a-page-title { font-size: 12px; color: #ff6b9d; letter-spacing: 2px; text-align: center; margin-bottom: 15px; margin-top: 10px; }
+  /* 🚨 A页 Title 缩小 */
+  .a-page-name { font-size: 28px; font-weight: 800; text-align: center; margin: 0 0 8px; background: linear-gradient(135deg, #fff, #ff6b9d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .a-page-desc { font-size: 16px; font-weight: bold; text-align: center; color: #fff; margin: 0 0 15px; }
   
-  /* 🚨 雷达图区域放大 */
-  .radar-box { background: #0f0f0f; border-radius: 12px; padding: 20px; margin: 20px 0; text-align: center; flex-shrink: 0; border: 1px solid #222; }
-  .radar-box h4 { margin: 0 0 15px; font-size: 18px; color: #ff6b9d; font-weight: bold; letter-spacing: 1px; }
+  /* 🚨 雷达图区域 */
+  .radar-box { background: #0f0f0f; border-radius: 12px; padding: 10px 20px 20px 20px; margin: 10px 0; text-align: center; flex-shrink: 0; border: 1px solid #222; }
   canvas { max-width: 100%; height: auto; display: block; margin: 0 auto; }
   
-  /* 🚨 匹配依据替换为 summary */
-  .a-page-summary { 
-    font-size: 14px; color: #ccc; line-height: 1.6; text-align: center; 
-    background: rgba(255,51,102,0.05); padding: 16px; border-radius: 8px; 
-    border-left: 3px solid #ff3366; margin-top: 10px; 
-  }
+  .a-page-summary { font-size: 14px; color: #ccc; line-height: 1.6; text-align: center; background: rgba(255,51,102,0.05); padding: 16px; border-radius: 8px; border-left: 3px solid #ff3366; margin-top: 10px; }
   
-  .b-page-desc-large { font-size: 28px; font-weight: 900; text-align: center; color: #fff; margin: 0 0 25px; line-height: 1.3; letter-spacing: 1px; background: linear-gradient(135deg, #fff, #ff6b9d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  /* 🚨 B页和C页 Title 调整 */
+  .b-page-desc-large { font-size: 24px; font-weight: 900; text-align: center; color: #fff; margin: 0 0 20px; line-height: 1.3; letter-spacing: 1px; background: linear-gradient(135deg, #fff, #ff6b9d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .c-page-desc-medium { font-size: 20px; font-weight: 900; text-align: center; color: #fff; margin: 0 0 20px; line-height: 1.3; letter-spacing: 1px; background: linear-gradient(135deg, #fff, #ff6b9d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  
   .b-page-dimensions-list { display: flex; flex-direction: column; gap: 20px; flex: 1; overflow-y: auto; padding-right: 5px; }
   .b-dim-section { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 16px; border-left: 3px solid #ff3366; }
   .b-dim-title { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
@@ -98,19 +74,8 @@
   .bar-fill { height: 100%; background: #ff3366; border-radius: 5px; }
   .dim-desc-text { font-size: 12px; color: #888; line-height: 1.5; margin-top: 8px; }
   
-  /* 🚨 悬浮导航按钮 (确保 z-index 最高) */
   #scrollNav { position: fixed; right: 15px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 15px; z-index: 9999; }
-  .scroll-btn { 
-    width: 44px; height: 44px; 
-    background: rgba(255, 255, 255, 0.1); 
-    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); 
-    border: 1px solid rgba(255, 255, 255, 0.2); 
-    border-radius: 50%; 
-    display: flex; align-items: center; justify-content: center; 
-    cursor: pointer; 
-    transition: all 0.3s ease; 
-    opacity: 0; pointer-events: none; transform: scale(0.8); 
-  }
+  .scroll-btn { width: 44px; height: 44px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; opacity: 0; pointer-events: none; transform: scale(0.8); }
   .scroll-btn.visible { opacity: 1; pointer-events: auto; transform: scale(1); }
   .scroll-btn:hover { background: rgba(255, 51, 102, 0.3); border-color: #ff3366; }
   .scroll-btn svg { width: 24px; height: 24px; fill: #fff; }
@@ -130,14 +95,9 @@
 </style>
 </head>
 <body>
-  <!-- 🚨 悬浮导航按钮 -->
   <div id="scrollNav" class="hidden">
-    <div class="scroll-btn scroll-up" onclick="scrollPage(-1)" title="上一页">
-      <svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
-    </div>
-    <div class="scroll-btn scroll-down" onclick="scrollPage(1)" title="下一页">
-      <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
-    </div>
+    <div class="scroll-btn scroll-up" onclick="scrollPage(-1)" title="上一页"><svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg></div>
+    <div class="scroll-btn scroll-down" onclick="scrollPage(1)" title="下一页"><svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg></div>
   </div>
 
   <div class="wrap">
@@ -471,12 +431,8 @@ function show(id) {
   document.querySelectorAll('.wrap > div').forEach(d => d.classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
   const scrollNav = document.getElementById('scrollNav');
-  if (id === 'page-result') { 
-    scrollNav.classList.remove('hidden'); 
-    setTimeout(initScrollButtons, 200); // 延迟确保 DOM 渲染完成
-  } else { 
-    scrollNav.classList.add('hidden'); 
-  }
+  if (id === 'page-result') { scrollNav.classList.remove('hidden'); setTimeout(initScrollButtons, 200); } 
+  else { scrollNav.classList.add('hidden'); }
 }
 function showMsg(text) { document.getElementById('msg').innerText = text; }
 
@@ -598,7 +554,6 @@ function renderTabs() {
   });
 }
 
-// 🚨 核心修改：严格生成 A, B, C, D, E 五页
 function renderCurrentHistory() {
   const container = document.getElementById('resultContent'); 
   container.innerHTML = '';
@@ -608,7 +563,7 @@ function renderCurrentHistory() {
   const dimKeys = ['E', 'T', 'D', 'A', 'C', 'S'];
   const maxScore = 120; 
 
-  // 1. A页: 雷达图 + Summary (无"匹配依据"字样)
+  // 1. A页: 雷达图 + Summary
   const pageA = `
     <div class="page-card">
       <div class="test-index-tag">第 ${currentHistoryIndex + 1} 次测试</div>
@@ -616,47 +571,44 @@ function renderCurrentHistory() {
       <h2 class="a-page-name">${r.name}</h2>
       <div class="a-page-desc">${r.desc}</div>
       <div class="radar-box">
-        <h4>你的Kpop本命魂</h4>
-        <canvas id="radarCanvas" width="400" height="400"></canvas>
+        <canvas id="radarCanvas" width="450" height="450"></canvas>
       </div>
-      <div class="a-page-summary">
-        ${r.summary || generateFallbackSummary(r.scores, r)}
-      </div>
+      <div class="a-page-summary">${r.summary || generateFallbackSummary(r.scores, r)}</div>
       <div class="share-hint"><p>📸 长按上方区域截图保存</p><small>分享给朋友，看看是不是同一种灵魂</small></div>
     </div>
   `;
 
-  // 2. B页: 维度 1-3 (E, T, D), Title: r.desc
+  // 2. B页: 维度 1-3, Title: desc + name
   const pageB = `
     <div class="page-card">
       <div class="test-index-tag">第 ${currentHistoryIndex + 1} 次测试</div>
-      <div class="b-page-desc-large">${r.desc}</div>
+      <div class="b-page-desc-large">${r.desc} ${r.name}</div>
       <div class="b-page-dimensions-list">
         <div class="b-dim-section"><div class="b-dim-title">⚡ ${DIM_FULL.E.name}</div><div class="b-dim-text">${r.details.E}</div></div>
         <div class="b-dim-section"><div class="b-dim-title">🧠 ${DIM_FULL.T.name}</div><div class="b-dim-text">${r.details.T}</div></div>
         <div class="b-dim-section"><div class="b-dim-title">🎯 ${DIM_FULL.D.name}</div><div class="b-dim-text">${r.details.D}</div></div>
       </div>
-      <div class="b-page-name-small">—— 匹配原型：${r.name} ——</div>
+      <div class="b-page-name-small">—— 匹配原型 ——</div>
       <div class="share-hint"><p>📸 长按上方区域截图保存</p><small>你的独特魅力，值得被看见</small></div>
     </div>
   `;
 
-  // 3. C页: 维度 4-6 (A, C, S), Title: r.desc
+  // 3. C页: 维度 4-6, Title: desc + name (适当缩小)
   const pageC = `
     <div class="page-card">
       <div class="test-index-tag">第 ${currentHistoryIndex + 1} 次测试</div>
-      <div class="b-page-desc-large">${r.desc}</div>
+      <div class="c-page-desc-medium">${r.desc} ${r.name}</div>
       <div class="b-page-dimensions-list">
         <div class="b-dim-section"><div class="b-dim-title">🔥 ${DIM_FULL.A.name}</div><div class="b-dim-text">${r.details.A}</div></div>
         <div class="b-dim-section"><div class="b-dim-title">💖 ${DIM_FULL.C.name}</div><div class="b-dim-text">${r.details.C}</div></div>
         <div class="b-dim-section"><div class="b-dim-title">🎨 ${DIM_FULL.S.name}</div><div class="b-dim-text">${r.details.S}</div></div>
       </div>
-      <div class="b-page-name-small">—— 匹配原型：${r.name} ——</div>
+      <div class="b-page-name-small">—— 匹配原型 ——</div>
       <div class="share-hint"><p>📸 长按上方区域截图保存</p><small>你的独特魅力，值得被看见</small></div>
     </div>
   `;
 
-  // 4. D页: 深度解析 1-3 (E, T, D), Title: 🧬 六维深度解析
+  // 4. D页: 深度解析 1-3
   let dimHtmlD = '';
   for (let i = 0; i < 3; i++) {
     const key = dimKeys[i], full = DIM_FULL[key], championName = r.dimChampions ? r.dimChampions[i] : '未知', score = r.scores[i], percent = (score / maxScore) * 100;
@@ -672,7 +624,7 @@ function renderCurrentHistory() {
     </div>
   `;
 
-  // 5. E页: 深度解析 4-6 (A, C, S), Title: 🧬 六维深度解析
+  // 5. E页: 深度解析 4-6
   let dimHtmlE = '';
   for (let i = 3; i < 6; i++) {
     const key = dimKeys[i], full = DIM_FULL[key], championName = r.dimChampions ? r.dimChampions[i] : '未知', score = r.scores[i], percent = (score / maxScore) * 100;
@@ -688,17 +640,15 @@ function renderCurrentHistory() {
     </div>
   `;
 
-  // 拼接 5 页
   container.innerHTML = pageA + pageB + pageC + pageD + pageE;
   
   setTimeout(() => { 
     const canvas = document.getElementById('radarCanvas'); 
     if (canvas) drawRadarOnCanvas(canvas, r.scores, r.dimChampions); 
-    initScrollButtons(); // 确保每次渲染后重新绑定滚动事件
+    initScrollButtons(); 
   }, 150);
 }
 
-// 🚨 悬浮按钮逻辑：智能判断是否显示向上/向下
 function initScrollButtons() {
   const container = document.querySelector('.result-container');
   const upBtn = document.querySelector('.scroll-up');
@@ -709,23 +659,16 @@ function initScrollButtons() {
     const scrollTop = container.scrollTop;
     const scrollHeight = container.scrollHeight;
     const clientHeight = container.clientHeight;
-    
-    // 向上按钮：只要滚动了就显示
-    if (scrollTop > 50) upBtn.classList.add('visible'); 
-    else upBtn.classList.remove('visible');
-    
-    // 向下按钮：只要没到底部就显示 (滑到 E 页底部时会自动隐藏)
-    if (scrollTop < scrollHeight - clientHeight - 50) downBtn.classList.add('visible'); 
-    else downBtn.classList.remove('visible');
+    if (scrollTop > 50) upBtn.classList.add('visible'); else upBtn.classList.remove('visible');
+    if (scrollTop < scrollHeight - clientHeight - 50) downBtn.classList.add('visible'); else downBtn.classList.remove('visible');
   };
-  
   container.addEventListener('scroll', checkScroll);
-  checkScroll(); // 初始化检查
+  checkScroll();
 }
 
 function scrollPage(direction) { 
   const container = document.querySelector('.result-container'); 
-  const cardHeight = container.querySelector('.page-card').offsetHeight; // 获取单页高度
+  const cardHeight = container.querySelector('.page-card').offsetHeight; 
   container.scrollBy({ top: direction * cardHeight, behavior: 'smooth' }); 
 }
 
@@ -734,46 +677,60 @@ function generateFallbackSummary(scores, idol) {
   return `${idol.desc}。你在${DIM_FULL[['E','T','D','A','C','S'][maxDimIdx]].name}维度表现尤为突出，是团队中不可或缺的独特存在。`; 
 }
 
+// 🚨 核心修改：雷达图放大，并在画布内绘制标题
 function drawRadarOnCanvas(canvas, scores, champions) {
   if (!canvas || !scores) return;
   const ctx = canvas.getContext('2d');
-  const w = 400, h = 400; // 放大画布
+  const w = 450, h = 450; // 🚨 放大画布
   canvas.width = w; canvas.height = h;
-  const cx = w / 2, cy = h / 2;
-  const R = 130; 
+  const cx = w / 2;
+  const graphCy = 250; // 🚨 图表中心下移，给顶部文字留空间
+  const R = 150; // 🚨 半径相应放大
   const maxScore = 120;
   
   ctx.clearRect(0, 0, w, h);
+  
+  // 🚨 在画布顶部绘制 "你的Kpop本命魂"
+  ctx.font = 'bold 20px "PingFang SC", sans-serif';
+  ctx.fillStyle = '#ff6b9d';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('✨ 你的Kpop本命魂 ✨', cx, 40);
+  
   for (let level = 1; level <= 5; level++) {
     const r = (R / 5) * level; ctx.beginPath();
-    for (let i = 0; i < 6; i++) { const a = (Math.PI * 2 / 6) * i - Math.PI / 2; const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
+    for (let i = 0; i < 6; i++) { const a = (Math.PI * 2 / 6) * i - Math.PI / 2; const x = cx + r * Math.cos(a), y = graphCy + r * Math.sin(a); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
     ctx.closePath(); ctx.strokeStyle = '#333'; ctx.lineWidth = 1; ctx.stroke();
   }
-  for (let i = 0; i < 6; i++) { const a = (Math.PI * 2 / 6) * i - Math.PI / 2; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + R * Math.cos(a), cy + R * Math.sin(a)); ctx.strokeStyle = '#444'; ctx.stroke(); }
+  for (let i = 0; i < 6; i++) { const a = (Math.PI * 2 / 6) * i - Math.PI / 2; ctx.beginPath(); ctx.moveTo(cx, graphCy); ctx.lineTo(cx + R * Math.cos(a), graphCy + R * Math.sin(a)); ctx.strokeStyle = '#444'; ctx.stroke(); }
   
   const points = []; ctx.beginPath();
-  for (let i = 0; i < 6; i++) { const a = (Math.PI * 2 / 6) * i - Math.PI / 2; const r = (scores[i] / maxScore) * R; const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a); points.push({ x, y, a }); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
+  for (let i = 0; i < 6; i++) { 
+    const a = (Math.PI * 2 / 6) * i - Math.PI / 2; 
+    const r = (scores[i] / maxScore) * R; 
+    const x = cx + r * Math.cos(a), y = graphCy + r * Math.sin(a); 
+    points.push({ x, y, realY: y }); 
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); 
+  }
   ctx.closePath(); ctx.fillStyle = 'rgba(255,51,102,0.3)'; ctx.fill(); ctx.strokeStyle = '#ff3366'; ctx.lineWidth = 2; ctx.stroke();
   
   ctx.textBaseline = 'middle';
   for (let i = 0; i < 6; i++) {
     const p = points[i]; 
-    ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI * 2); ctx.fillStyle = '#ff3366'; ctx.fill();
+    ctx.beginPath(); ctx.arc(p.x, p.realY, 4, 0, Math.PI * 2); ctx.fillStyle = '#ff3366'; ctx.fill();
     const cos = Math.cos(p.a); 
     ctx.textAlign = (Math.abs(cos) < 0.2) ? 'center' : (cos > 0 ? 'right' : 'left');
     
     const isTop = (i === 0 || i === 1 || i === 5);
-    const tx = cx + (R + 30) * cos;
-    const ty = cy + (R + 30) * Math.sin(p.a);
+    const tx = cx + (R + 35) * cos;
+    const ty = graphCy + (R + 35) * Math.sin(p.a);
     const nm = (champions && champions[i]) ? String(champions[i]).split(' ')[0] : '';
     
     if (isTop) {
-      // 上三个角：名字 > 维度名 > 分数 (从上到下)
       ctx.font = 'bold 16px sans-serif'; ctx.fillStyle = '#fff'; ctx.fillText(nm, tx, ty - 30);
       ctx.font = 'bold 13px sans-serif'; ctx.fillStyle = '#ff6b9d'; ctx.fillText(DIM_NAMES[i], tx, ty - 12);
       ctx.font = '12px sans-serif'; ctx.fillStyle = '#888'; ctx.fillText(scores[i] + '分', tx, ty + 6);
     } else {
-      // 下三个角：分数 > 维度名 > 名字 (从上到下，即名字在最下面)
       ctx.font = '12px sans-serif'; ctx.fillStyle = '#888'; ctx.fillText(scores[i] + '分', tx, ty - 6);
       ctx.font = 'bold 13px sans-serif'; ctx.fillStyle = '#ff6b9d'; ctx.fillText(DIM_NAMES[i], tx, ty + 12);
       ctx.font = 'bold 16px sans-serif'; ctx.fillStyle = '#fff'; ctx.fillText(nm, tx, ty + 30);
