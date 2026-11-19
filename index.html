@@ -571,7 +571,8 @@ function renderCurrentHistory() {
       <h2 class="a-page-name">${r.name}</h2>
       <div class="a-page-desc">${r.desc}</div>
       <div class="radar-box">
-        <canvas id="radarCanvas" width="450" height="450"></canvas>
+        <h4>✨ 你的Kpop本命魂 ✨</h4>
+        <canvas id="radarCanvas" width="400" height="400"></canvas>
       </div>
       <div class="a-page-summary">${r.summary || generateFallbackSummary(r.scores, r)}</div>
       <div class="share-hint"><p>📸 长按上方区域截图保存</p><small>分享给朋友，看看是不是同一种灵魂</small></div>
@@ -678,59 +679,68 @@ function generateFallbackSummary(scores, idol) {
 }
 
 // 🚨 核心修改：雷达图放大，并在画布内绘制标题
+// 🚨 修复：补回丢失的角度 a，放大雷达图半径，标题由 HTML 渲染
 function drawRadarOnCanvas(canvas, scores, champions) {
   if (!canvas || !scores) return;
   const ctx = canvas.getContext('2d');
-  const w = 450, h = 450; // 🚨 放大画布
+  const w = 400, h = 400; 
   canvas.width = w; canvas.height = h;
-  const cx = w / 2;
-  const graphCy = 250; // 🚨 图表中心下移，给顶部文字留空间
-  const R = 150; // 🚨 半径相应放大
+  const cx = w / 2, cy = h / 2; // 中心点 (200, 200)
+  const R = 130; // 🚨 放大雷达图半径
   const maxScore = 120;
   
   ctx.clearRect(0, 0, w, h);
   
-  // 🚨 在画布顶部绘制 "你的Kpop本命魂"
-  ctx.font = 'bold 20px "PingFang SC", sans-serif';
-  ctx.fillStyle = '#ff6b9d';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('✨ 你的Kpop本命魂 ✨', cx, 40);
-  
+  // 绘制网格
   for (let level = 1; level <= 5; level++) {
     const r = (R / 5) * level; ctx.beginPath();
-    for (let i = 0; i < 6; i++) { const a = (Math.PI * 2 / 6) * i - Math.PI / 2; const x = cx + r * Math.cos(a), y = graphCy + r * Math.sin(a); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
+    for (let i = 0; i < 6; i++) { 
+      const a = (Math.PI * 2 / 6) * i - Math.PI / 2; 
+      const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a); 
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); 
+    }
     ctx.closePath(); ctx.strokeStyle = '#333'; ctx.lineWidth = 1; ctx.stroke();
   }
-  for (let i = 0; i < 6; i++) { const a = (Math.PI * 2 / 6) * i - Math.PI / 2; ctx.beginPath(); ctx.moveTo(cx, graphCy); ctx.lineTo(cx + R * Math.cos(a), graphCy + R * Math.sin(a)); ctx.strokeStyle = '#444'; ctx.stroke(); }
+  // 绘制轴线
+  for (let i = 0; i < 6; i++) { 
+    const a = (Math.PI * 2 / 6) * i - Math.PI / 2; 
+    ctx.beginPath(); ctx.moveTo(cx, cy); 
+    ctx.lineTo(cx + R * Math.cos(a), cy + R * Math.sin(a)); 
+    ctx.strokeStyle = '#444'; ctx.stroke(); 
+  }
   
+  // 🚨 核心修复：必须把角度 a 存入 points 对象！
   const points = []; ctx.beginPath();
   for (let i = 0; i < 6; i++) { 
     const a = (Math.PI * 2 / 6) * i - Math.PI / 2; 
     const r = (scores[i] / maxScore) * R; 
-    const x = cx + r * Math.cos(a), y = graphCy + r * Math.sin(a); 
-    points.push({ x, y, realY: y }); 
+    const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a); 
+    points.push({ x, y, a }); // 👈 这里补回了 a
     i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); 
   }
   ctx.closePath(); ctx.fillStyle = 'rgba(255,51,102,0.3)'; ctx.fill(); ctx.strokeStyle = '#ff3366'; ctx.lineWidth = 2; ctx.stroke();
   
+  // 绘制文字
   ctx.textBaseline = 'middle';
   for (let i = 0; i < 6; i++) {
     const p = points[i]; 
-    ctx.beginPath(); ctx.arc(p.x, p.realY, 4, 0, Math.PI * 2); ctx.fillStyle = '#ff3366'; ctx.fill();
+    ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI * 2); ctx.fillStyle = '#ff3366'; ctx.fill();
     const cos = Math.cos(p.a); 
     ctx.textAlign = (Math.abs(cos) < 0.2) ? 'center' : (cos > 0 ? 'right' : 'left');
     
     const isTop = (i === 0 || i === 1 || i === 5);
-    const tx = cx + (R + 35) * cos;
-    const ty = graphCy + (R + 35) * Math.sin(p.a);
+    const offset = 165; // 文字距离中心的偏移量
+    const tx = cx + offset * cos;
+    const ty = cy + offset * Math.sin(p.a);
     const nm = (champions && champions[i]) ? String(champions[i]).split(' ')[0] : '';
     
     if (isTop) {
+      // 上三角：名字 > 维度名 > 分数
       ctx.font = 'bold 16px sans-serif'; ctx.fillStyle = '#fff'; ctx.fillText(nm, tx, ty - 30);
       ctx.font = 'bold 13px sans-serif'; ctx.fillStyle = '#ff6b9d'; ctx.fillText(DIM_NAMES[i], tx, ty - 12);
       ctx.font = '12px sans-serif'; ctx.fillStyle = '#888'; ctx.fillText(scores[i] + '分', tx, ty + 6);
     } else {
+      // 下三角：分数 > 维度名 > 名字
       ctx.font = '12px sans-serif'; ctx.fillStyle = '#888'; ctx.fillText(scores[i] + '分', tx, ty - 6);
       ctx.font = 'bold 13px sans-serif'; ctx.fillStyle = '#ff6b9d'; ctx.fillText(DIM_NAMES[i], tx, ty + 12);
       ctx.font = 'bold 16px sans-serif'; ctx.fillStyle = '#fff'; ctx.fillText(nm, tx, ty + 30);
