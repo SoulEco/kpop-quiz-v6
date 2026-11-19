@@ -4,95 +4,81 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>K-pop 性格原型测试 (6维专业版)</title>
-
 <style>
-  /* 基础样式保持不变... */
+  /* 保持你之前的 CSS 样式不变，此处省略以节省篇幅，请保留原有的 <style> 内容 */
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   body { margin: 0; font-family: -apple-system, 'PingFang SC', sans-serif; background: #0a0a0a; color: #fff; min-height: 100vh; overflow: hidden; }
   .wrap { max-width: 480px; margin: 0 auto; padding: 24px; height: 100vh; display: flex; flex-direction: column; }
   .hidden { display: none !important; }
-  
-  /* ... (保留原有的 hero, input, btn, quiz 等样式) ... */
   .hero { text-align: center; padding: 40px 0; }
   .hero h1 { font-size: 26px; margin: 0 0 12px; background: linear-gradient(135deg, #ff3366, #ff6b9d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   .hero p { color: #888; font-size: 14px; line-height: 1.6; margin: 0 0 30px; }
   .code-input { width: 100%; padding: 18px; font-size: 26px; letter-spacing: 8px; text-align: center; text-transform: uppercase; border: 2px solid #222; background: #151515; color: #fff; border-radius: 12px; outline: none; }
+  .code-input:focus { border-color: #ff3366; }
   .btn-primary { width: 100%; padding: 16px; background: linear-gradient(135deg, #ff3366, #ff6b9d); color: #fff; font-weight: bold; border: none; border-radius: 12px; font-size: 17px; cursor: pointer; margin-top: 16px; }
-  .msg { color: #ff4444; font-size: 13px; margin-top: 12px; text-align: center; }
+  .btn-primary:disabled { opacity: 0.5; }
+  .msg { color: #ff4444; font-size: 13px; margin-top: 12px; text-align: center; min-height: 18px; }
   .gen-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
-  .gen-card { background: #151515; border: 1.5px solid #222; border-radius: 12px; padding: 20px 12px; text-align: center; cursor: pointer; }
+  .gen-card { background: #151515; border: 1.5px solid #222; border-radius: 12px; padding: 20px 12px; text-align: center; cursor: pointer; transition: 0.2s; }
+  .gen-card:hover { border-color: #ff3366; background: #1a1015; }
   .gen-card h3 { margin: 0 0 8px; font-size: 16px; color: #ff6b9d; }
-  
-  /* 🚨 结果页：小红书 3:4 海报比例优化 */
-  .result-container { flex: 1; height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; position: relative; display: flex; flex-direction: column; align-items: center; padding: 10px 0; }
+  .gen-card .info-link { display: block; margin-top: 10px; font-size: 11px; color: #ff6b9d; text-decoration: underline; }
+  .quiz-header { display: flex; justify-content: space-between; font-size: 13px; color: #888; margin-bottom: 16px; }
+  .progress { height: 4px; background: #222; border-radius: 2px; overflow: hidden; margin-bottom: 24px; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #ff3366, #ff6b9d); width: 0%; transition: width 0.4s; }
+  .q-text { font-size: 18px; line-height: 1.6; font-weight: 600; margin-bottom: 24px; }
+  .opt { width: 100%; padding: 14px; background: #151515; border: 1.5px solid #222; color: #fff; border-radius: 10px; margin-bottom: 10px; text-align: left; cursor: pointer; font-size: 14px; line-height: 1.5; }
+  .opt:hover { border-color: #ff3366; }
+  .opt.selected { border-color: #ff3366; background: #2a1018; }
+  .quiz-nav { display: flex; gap: 10px; margin-top: 8px; }
+  .btn-secondary { flex: 1; padding: 14px; background: #1a1a1a; color: #fff; border: 1px solid #333; border-radius: 12px; font-size: 15px; cursor: pointer; }
+  .btn-secondary:disabled { opacity: 0.3; cursor: not-allowed; }
+  .result-container { flex: 1; height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; -ms-overflow-style: none; position: relative; }
   .result-container::-webkit-scrollbar { display: none; }
-  
-  .page-card {
-    /* 核心：3:4 比例，模拟小红书笔记 */
-    aspect-ratio: 3/4; 
-    width: 95%;
-    max-height: 90vh;
-    scroll-snap-align: center;
-    background: #151515;
-    border: 1px solid #2a2a2a;
-    border-radius: 16px;
-    padding: 24px 20px 40px 20px;
-    margin-bottom: 20px;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden; /* 防止内容溢出 */
-  }
-  .page-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #ff3366, #ff6b9d); }
-  
-  .test-index-tag { position: absolute; top: 12px; right: 12px; background: rgba(255,51,102,0.15); color: #ff6b9d; padding: 4px 8px; border-radius: 10px; font-size: 10px; font-weight: bold; }
-  
-  /* A 页布局调整 */
-  .a-page-title { font-size: 12px; color: #ff6b9d; letter-spacing: 2px; text-align: center; margin-bottom: 10px; margin-top: 10px;}
-  .a-page-name { font-size: 28px; font-weight: 800; text-align: center; margin: 0 0 5px; background: linear-gradient(135deg, #fff, #ff6b9d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .a-page-desc { font-size: 16px; font-weight: bold; text-align: center; color: #fff; margin: 0 0 15px; }
-  
-  /* 雷达图区域放大 */
-  .radar-box { background: #0f0f0f; border-radius: 12px; padding: 15px; margin: 10px 0; text-align: center; flex-shrink: 0; border: 1px solid #222; }
-  .radar-box h4 { margin: 0 0 10px; font-size: 16px; color: #ff6b9d; font-weight: bold; letter-spacing: 1px; }
-  canvas { max-width: 100%; height: auto; display: block; margin: 0 auto; }
-  
-  /* 新的构成文案区域 */
-  .soul-composition { 
-    font-size: 13px; color: #aaa; line-height: 1.5; text-align: center; 
-    background: rgba(255,51,102,0.05); padding: 10px; border-radius: 8px; 
-    border-left: 3px solid #ff3366; margin-top: 10px;
-  }
-  .soul-composition strong { color: #ff6b9d; display: block; margin-bottom: 6px; font-size: 14px; }
-  .soul-composition .percent-text { color: #fff; font-weight: bold; font-size: 13px; }
-
-  /* B 页 & C 页样式微调以适应 3:4 */
-  .b-page-desc-large { font-size: 24px; font-weight: 900; text-align: center; color: #fff; margin: 10px 0 15px; line-height: 1.3; background: linear-gradient(135deg, #fff, #ff6b9d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .b-page-dimensions-list { display: flex; flex-direction: column; gap: 12px; flex: 1; overflow-y: auto; padding-right: 5px; }
-  .b-dim-section { background: rgba(255,255,255,0.03); border-radius: 8px; padding: 12px; border-left: 3px solid #ff3366; }
-  .b-dim-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 6px; }
-  .b-dim-text { font-size: 13px; color: #ccc; line-height: 1.5; }
-  .b-page-name-small { font-size: 12px; text-align: center; color: #555; margin-top: 15px; letter-spacing: 2px; }
-  
-  .c-page-title { font-size: 16px; font-weight: bold; color: #ff6b9d; text-align: center; margin: 10px 0 15px; }
-  .dim-block { margin-bottom: 15px; border-bottom: 1px solid #222; padding-bottom: 12px; }
-  .dim-header-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
-  .dim-name-score { font-size: 13px; font-weight: bold; color: #fff; }
-  .dim-champion { font-size: 12px; font-weight: bold; color: #ff6b9d; }
-  .bar-container { width: 100%; height: 8px; background: transparent; border: 1px solid #ff3366; border-radius: 4px; margin: 8px 0; overflow: hidden; }
-  .bar-fill { height: 100%; background: #ff3366; border-radius: 4px; }
-  .dim-desc-text { font-size: 11px; color: #888; line-height: 1.4; }
-  
-  .share-hint { margin-top: auto; padding-top: 15px; text-align: center; border-top: 1px dashed #333; }
-  .share-hint p { color: #ff6b9d; font-size: 12px; font-weight: bold; margin: 0 0 4px; }
-  .share-hint small { color: #666; font-size: 10px; }
-  
-  #scrollNav { position: fixed; right: 10px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; z-index: 100; }
-  .scroll-btn { width: 36px; height: 36px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: 0.3s; }
-  .scroll-btn.visible { opacity: 1; }
-  .scroll-btn svg { width: 20px; height: 20px; fill: #fff; }
+  .page-card { min-height: 100%; scroll-snap-align: start; background: #151515; border: 1px solid #2a2a2a; border-radius: 20px; padding: 30px 24px 60px 24px; margin-bottom: 20px; position: relative; display: flex; flex-direction: column; }
+  .page-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #ff3366, #ff6b9d); border-radius: 20px 20px 0 0; }
+  .test-index-tag { position: absolute; top: 15px; right: 15px; background: rgba(255,51,102,0.15); color: #ff6b9d; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+  .a-page-title { font-size: 12px; color: #ff6b9d; letter-spacing: 2px; text-align: center; margin-bottom: 20px; }
+  .a-page-name { font-size: 32px; font-weight: 800; text-align: center; margin: 0 0 10px; background: linear-gradient(135deg, #fff, #ff6b9d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .a-page-desc { font-size: 18px; font-weight: bold; text-align: center; color: #fff; margin: 0 0 20px; }
+  .radar-box { background: #0f0f0f; border-radius: 12px; padding: 20px; margin: 20px 0; text-align: center; flex-shrink: 0; }
+  .radar-box h4 { margin: 0 0 15px; font-size: 14px; color: #ff6b9d; }
+  canvas { max-width: 100%; height: auto; }
+  .a-page-summary { font-size: 14px; color: #aaa; line-height: 1.6; text-align: center; background: rgba(255,51,102,0.05); padding: 12px; border-radius: 8px; border-left: 3px solid #ff3366; }
+  .b-page-desc-large { font-size: 28px; font-weight: 900; text-align: center; color: #fff; margin: 0 0 25px; line-height: 1.3; letter-spacing: 1px; background: linear-gradient(135deg, #fff, #ff6b9d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .b-page-dimensions-list { display: flex; flex-direction: column; gap: 20px; flex: 1; overflow-y: auto; }
+  .b-dim-section { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 16px; border-left: 3px solid #ff3366; }
+  .b-dim-title { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .b-dim-text { font-size: 14px; color: #ccc; line-height: 1.6; }
+  .b-page-name-small { font-size: 13px; text-align: center; color: #555; margin-top: 25px; letter-spacing: 2px; text-transform: uppercase; font-weight: 400; }
+  .c-page-title { font-size: 18px; font-weight: bold; color: #ff6b9d; text-align: center; margin: 0 0 25px; }
+  .dim-block { margin-bottom: 24px; border-bottom: 1px solid #222; padding-bottom: 20px; }
+  .dim-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .dim-header-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+  .dim-name-score { font-size: 15px; font-weight: bold; color: #fff; }
+  .dim-champion { font-size: 14px; font-weight: bold; color: #ff6b9d; }
+  .bar-container { width: 100%; height: 10px; background: transparent; border: 1px solid #ff3366; border-radius: 5px; margin: 10px 0; position: relative; overflow: hidden; }
+  .bar-fill { height: 100%; background: #ff3366; border-radius: 5px; }
+  .dim-desc-text { font-size: 12px; color: #888; line-height: 1.5; margin-top: 8px; }
+  #scrollNav { position: fixed; right: 15px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 15px; z-index: 100; }
+  .scroll-btn { width: 44px; height: 44px; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; opacity: 0; pointer-events: none; transform: scale(0.8); }
+  .scroll-btn.visible { opacity: 1; pointer-events: auto; transform: scale(1); }
+  .scroll-btn:hover { background: rgba(255, 51, 102, 0.25); border-color: #ff3366; }
+  .scroll-btn svg { width: 24px; height: 24px; fill: #fff; }
+  .share-hint { margin-top: auto; padding-top: 20px; text-align: center; border-top: 1px dashed #333; }
+  .share-hint p { color: #ff6b9d; font-size: 14px; font-weight: bold; margin: 0 0 4px; }
+  .share-hint small { color: #666; font-size: 11px; }
+  .poster-footer { text-align: center; font-size: 11px; color: #555; margin-top: 10px; }
+  .status-badge { display: inline-block; padding: 4px 12px; background: rgba(255,51,102,0.15); color: #ff6b9d; border-radius: 20px; font-size: 12px; margin-top: 12px; }
+  .gen-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; justify-content: center; }
+  .gen-tab { padding: 6px 14px; background: #1a1a1a; border: 1px solid #333; border-radius: 20px; font-size: 12px; cursor: pointer; color: #888; transition: 0.2s; }
+  .gen-tab.active { border-color: #ff3366; color: #fff; background: rgba(255,51,102,0.2); }
+  .confirm-box, .calc-box { text-align: center; padding: 50px 0; }
+  .calc-box .spinner { font-size: 50px; margin-bottom: 30px; animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .calc-bar { height: 6px; background: #222; border-radius: 3px; overflow: hidden; margin: 20px 0; }
+  .calc-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #ff3366, #ff6b9d); border-radius: 3px; }
 </style>
-
 </head>
 <body>
   <div id="scrollNav" class="hidden">
@@ -205,32 +191,32 @@ const questions = {
     { q: "23. 回顾早期偶像生涯，最看重什么？", opts: [{ t: "舞台上的辉煌时刻", s: [4, 3, 3, 4, 2, 4] }, { t: "和成员们的珍贵友谊", s: [2, 2, 3, 1, 5, 2] }, { t: "粉丝的支持和陪伴", s: [2, 2, 3, 2, 5, 2] }, { t: "个人成长和蜕变", s: [3, 4, 4, 3, 2, 4] }] },
     { q: "24. 用一句话总结偶像生涯，希望是？", opts: [{ t: "燃烧自己照亮别人", s: [4, 2, 3, 3, 5, 3] }, { t: "打破规则定义新标准", s: [4, 4, 4, 4, 2, 5] }, { t: "享受舞台找到真实自己", s: [3, 2, 2, 2, 3, 4] }, { t: "做到极致不留遗憾", s: [3, 4, 5, 3, 2, 4] }] }
   ],
-  gen2: [
-    { q: "1. 音源发布首日，面临强劲对手，你会？", opts: [{ t: "疯狂刷榜拉票，动员所有粉丝力量", s: [4, 2, 4, 4, 2, 3] }, { t: "专注舞台质量，相信实力会说话", s: [2, 3, 4, 3, 3, 4] }, { t: "有点焦虑，但努力调整心态", s: [2, 2, 3, 2, 4, 2] }, { t: "无所谓，享受过程就好", s: [3, 2, 2, 1, 4, 2] }] },
-    { q: "2. 组合面临“黑海”或严重抵制危机，你会？", opts: [{ t: "感到难过，但会默默努力用舞台成绩反击", s: [2, 2, 4, 3, 3, 3] }, { t: "完全不在意，甚至觉得是热度", s: [3, 3, 2, 4, 2, 4] }, { t: "理性分析来源，必要时交由法务处理", s: [2, 4, 3, 4, 2, 3] }, { t: "在粉丝见面会上温柔回应，感化他们", s: [2, 2, 3, 1, 5, 2] }] },
-    { q: "3. 公司要求你接拍一部可能颠覆形象的电视剧，你会？", opts: [{ t: "谨慎选择剧本，追求演技上的完美", s: [2, 4, 4, 3, 2, 3] }, { t: "大胆尝试全新角色，不怕外界争议", s: [4, 2, 2, 4, 3, 4] }, { t: "听从公司安排，配合团队整体步调", s: [2, 3, 4, 2, 3, 2] }, { t: "先休息一段时间，调整状态再出发", s: [1, 3, 2, 1, 3, 2] }] },
-    { q: "4. 早期综艺节目里，被前辈开玩笑，你会？", opts: [{ t: "毫不怯场，立刻接梗制造笑点", s: [4, 2, 1, 3, 2, 4] }, { t: "害羞但努力配合不冷场", s: [2, 2, 3, 2, 3, 2] }, { t: "把话题抛给擅长综艺的成员", s: [2, 3, 3, 1, 5, 2] }, { t: "借机展现隐藏才华（如乐器/高音）", s: [4, 3, 4, 3, 2, 4] }] },
-    { q: "5. 组合里有成员突然宣布退团，你会？", opts: [{ t: "积极沟通，努力留住每个人", s: [2, 2, 3, 2, 5, 2] }, { t: "理性分析，尊重每个人选择", s: [2, 4, 3, 3, 2, 3] }, { t: "自己先决定，再影响他人", s: [3, 3, 3, 4, 2, 4] }, { t: "顺其自然，相信命运", s: [2, 2, 2, 1, 4, 2] }] },
-    { q: "6. 首次开启亚洲巡回演唱会，后台准备时，你会？", opts: [{ t: "兴奋，挑战高难度", s: [4, 3, 4, 4, 2, 4] }, { t: "感到压力但加倍练习", s: [2, 3, 5, 3, 3, 3] }, { t: "先观察别人找发力方式", s: [3, 4, 3, 2, 2, 3] }, { t: "拉队友一起练习，互相鼓励", s: [2, 2, 3, 2, 5, 2] }] },
-    { q: "7. 面对网络上的“外貌攻击”或身材争议，你会？", opts: [{ t: "难过，向信任的人倾诉寻求安慰", s: [2, 1, 2, 1, 5, 2] }, { t: "不在意，用更好的舞台成绩反击", s: [4, 4, 4, 4, 2, 4] }, { t: "理性分析来源，必要时交由法务处理", s: [3, 4, 3, 4, 2, 3] }, { t: "幽默自嘲化解，展现大度", s: [4, 3, 2, 3, 3, 4] }] },
-    { q: "8. 获得首个音乐节目一位，安可舞台你会？", opts: [{ t: "激动大哭感谢粉丝", s: [3, 1, 2, 2, 5, 2] }, { t: "保持微笑优雅感言", s: [3, 3, 4, 3, 2, 4] }, { t: "尽情欢呼跳跃释放", s: [4, 2, 1, 3, 2, 3] }, { t: "看队友紧紧拥抱", s: [2, 2, 3, 1, 5, 2] }] },
-    { q: "9. 团队概念从清纯突然转向成熟性感，你会？", opts: [{ t: "兴奋，终于能展现不同面貌", s: [4, 2, 2, 4, 3, 4] }, { t: "担心粉丝接受度，谨慎尝试", s: [2, 3, 3, 2, 4, 2] }, { t: "专业完成，私下表达真实想法", s: [2, 4, 4, 3, 2, 3] }, { t: "完全听从公司安排", s: [2, 3, 4, 2, 3, 2] }] },
-    { q: "10. 个人 Solo 专辑筹备期，你会？", opts: [{ t: "每天在社交媒体发幕后花絮，和粉丝互动", s: [4, 2, 3, 3, 3, 4] }, { t: "专注舞台练习，确保每个细节完美", s: [2, 3, 4, 3, 2, 3] }, { t: "接受各种时尚杂志采访，提升格调", s: [3, 3, 3, 4, 3, 5] }, { t: "邀请成员们来 MV 客串，展现团魂", s: [2, 2, 3, 2, 5, 2] }] },
-    { q: "11. 粉丝在机场接机时发生推挤，你会？", opts: [{ t: "礼貌微笑，保持距离", s: [2, 3, 3, 3, 2, 3] }, { t: "主动打招呼，满足粉丝", s: [4, 2, 2, 2, 4, 3] }, { t: "有点不知所措，快速通过", s: [1, 2, 2, 1, 3, 2] }, { t: "让安保维持秩序，保护自己", s: [2, 4, 3, 4, 2, 3] }] },
-    { q: "12. 组合合约到期，面临续约或解散，你会？", opts: [{ t: "积极沟通，努力留住每个人", s: [2, 2, 3, 2, 5, 2] }, { t: "理性分析，尊重每个人选择", s: [2, 4, 3, 3, 2, 3] }, { t: "自己先决定，再影响他人", s: [3, 3, 3, 4, 2, 4] }, { t: "顺其自然，相信命运", s: [2, 2, 2, 1, 4, 2] }] },
-    { q: "13. 回归期连续熬夜打歌，身体到达极限时，你会？", opts: [{ t: "吞下止痛药，镜头前依然保持完美表情", s: [3, 3, 5, 3, 2, 4] }, { t: "后台抱怨好累，上台瞬间像换了个人爆发", s: [4, 2, 2, 3, 2, 4] }, { t: "担心队友，主动帮她们分担走位递水", s: [2, 2, 3, 1, 5, 2] }, { t: "心里盘算结束后怎么狠狠休息，继续坚持", s: [3, 4, 4, 2, 2, 3] }] },
-    { q: "14. 签售会上粉丝送了奇怪但用心的礼物，你会？", opts: [{ t: "真诚感谢，仔细询问细节", s: [2, 2, 3, 2, 5, 3] }, { t: "大方开玩笑调侃，活跃气氛", s: [4, 2, 2, 3, 2, 4] }, { t: "礼貌微笑，思考如何妥善放置", s: [3, 3, 4, 2, 2, 3] }, { t: "直接惊喜，想出有趣点子回应", s: [4, 4, 2, 3, 3, 4] }] },
-    { q: "15. 突然获得一天完全没行程的假期，你会？", opts: [{ t: "去练习室加练，保持状态不能松懈", s: [2, 3, 5, 3, 2, 3] }, { t: "宅宿舍点外卖追剧，享受绝对个人空间", s: [1, 2, 1, 1, 2, 2] }, { t: "约朋友逛街探店，把行程排得满满", s: [4, 2, 1, 3, 3, 4] }, { t: "整理房间做规划，或学习一项新技能", s: [2, 4, 4, 2, 2, 3] }] },
-    { q: "16. 面对网络恶意评论，你的心态是？", opts: [{ t: "难过，向信任的人倾诉寻求安慰", s: [2, 1, 2, 1, 5, 2] }, { t: "不在意，用更好的舞台成绩反击", s: [4, 4, 4, 4, 2, 4] }, { t: "理性分析来源，必要时交由法务处理", s: [3, 4, 3, 4, 2, 3] }, { t: "幽默自嘲化解，展现大度", s: [4, 3, 2, 3, 3, 4] }] },
-    { q: "17. 宿舍轮到你打扫卫生，你会？", opts: [{ t: "制定值日表严格执行", s: [2, 4, 5, 3, 2, 3] }, { t: "快速打扫表面", s: [2, 2, 2, 2, 2, 2] }, { t: "边打扫边放音乐", s: [3, 1, 2, 2, 3, 3] }, { t: "主动承担更多", s: [2, 3, 3, 2, 5, 2] }] },
-    { q: "18. 学一支极高难度舞蹈，态度是？", opts: [{ t: "兴奋，挑战高难度", s: [4, 3, 4, 4, 2, 4] }, { t: "感到压力但加倍练习", s: [2, 3, 5, 3, 3, 3] }, { t: "先观察别人找发力方式", s: [3, 4, 3, 2, 2, 3] }, { t: "拉队友一起练习", s: [2, 2, 3, 2, 5, 2] }] },
-    { q: "19. 队友情绪低落时，你会？", opts: [{ t: "默默陪伴递零食", s: [2, 2, 3, 1, 5, 2] }, { t: "带她出去吃顿好的", s: [4, 2, 1, 2, 3, 3] }, { t: "理性分析问题给建议", s: [3, 4, 3, 3, 2, 3] }, { t: "用搞笑行为逗她", s: [4, 1, 2, 3, 3, 4] }] },
-    { q: "20. 自己决定下次概念风格，选？", opts: [{ t: "强烈 Girl Crush", s: [4, 4, 3, 4, 2, 4] }, { t: "优雅高贵艺术感", s: [3, 3, 4, 3, 3, 5] }, { t: "清新活泼元气", s: [4, 1, 2, 2, 3, 3] }, { t: "温暖治愈正能量", s: [2, 2, 3, 1, 5, 2] }] },
-    { q: "21. 演唱会安可环节，倾向于？", opts: [{ t: "尽情互动享受舞台", s: [4, 2, 1, 3, 3, 4] }, { t: "保持专业完美呈现", s: [3, 3, 5, 3, 2, 4] }, { t: "看粉丝队友感动流泪", s: [2, 1, 2, 1, 5, 2] }, { t: "自由奔跑展现放松", s: [4, 2, 2, 2, 2, 3] }] },
-    { q: "22. 面对不适合的人设，你会？", opts: [{ t: "私下沟通表达想法", s: [3, 4, 3, 3, 2, 3] }, { t: "先尝试配合不行再说", s: [2, 3, 3, 2, 3, 2] }, { t: "表面配合加入自己理解", s: [3, 3, 4, 3, 3, 4] }, { t: "委屈但为大局忍受", s: [1, 2, 3, 1, 5, 2] }] },
-    { q: "23. 个人 Solo 成绩不如预期，你会？", opts: [{ t: "难过，但会默默反思改进", s: [2, 2, 3, 2, 4, 3] }, { t: "分析原因，调整策略再出发", s: [2, 4, 4, 4, 2, 3] }, { t: "无所谓，享受过程就好", s: [3, 2, 2, 1, 4, 2] }, { t: "寻求成员和粉丝的支持", s: [2, 2, 3, 1, 5, 2] }] },
-    { q: "24. 用一句话总结二代偶像生涯，希望是？", opts: [{ t: "燃烧自己照亮别人", s: [4, 2, 3, 3, 5, 3] }, { t: "打破规则定义新标准", s: [4, 4, 4, 4, 2, 5] }, { t: "享受舞台找到真实自己", s: [3, 2, 2, 2, 3, 4] }, { t: "做到极致不留遗憾", s: [3, 4, 5, 3, 2, 4] }] }
-  ],
+gen2: [
+    { q: "2. 面对转型演员的机遇，你的态度是？", opts: [{ t: "谨慎选择剧本，追求演技上的完美", s: [2, 4, 4, 3, 2, 3] }, { t: "大胆尝试全新角色，不怕外界争议", s: [4, 2, 2, 4, 3, 4] }, { t: "听从公司安排，配合团队整体步调", s: [2, 3, 4, 2, 3, 2] }, { t: "先休息一段时间，调整状态再出发", s: [1, 3, 2, 1, 3, 2] }] },
+    { q: "3. 团队对专辑概念有严重分歧，你通常？", opts: [{ t: "列出利弊分析，用数据和过往案例说服大家", s: [3, 4, 3, 3, 2, 3] }, { t: "当和事佬，努力找让所有人都满意的方案", s: [2, 2, 3, 1, 5, 2] }, { t: "提出最大胆颠覆的新想法，直接打破僵局", s: [4, 3, 2, 4, 3, 4] }, { t: "支持队长最终决定，全力配合执行到位", s: [3, 3, 4, 2, 3, 2] }] },
+    { q: "5. 公司安排你去参加一个早期不擅长的综艺，你会？", opts: [{ t: "提前做功课，努力表现不冷场", s: [3, 3, 4, 3, 2, 3] }, { t: "展现真实的一面，哪怕笨拙也很可爱", s: [4, 1, 2, 2, 3, 3] }, { t: "把机会让给更有综艺感的成员", s: [2, 3, 3, 1, 5, 2] }, { t: "直接拒绝，专注音乐本业", s: [2, 4, 3, 4, 2, 3] }] },
+    { q: "6. 回归期连续熬夜打歌，身体到达极限时，你会？", opts: [{ t: "吞下止痛药，镜头前依然保持完美表情", s: [3, 3, 5, 3, 2, 4] }, { t: "后台抱怨好累，上台瞬间像换了个人爆发", s: [4, 2, 2, 3, 2, 4] }, { t: "担心队友，主动帮她们分担走位递水", s: [2, 2, 3, 1, 5, 2] }, { t: "心里盘算结束后怎么狠狠休息，继续坚持", s: [3, 4, 4, 2, 2, 3] }] },
+    { q: "7. 签售会上粉丝送了奇怪但用心的礼物，你会？", opts: [{ t: "真诚感谢，仔细询问细节", s: [2, 2, 3, 2, 5, 3] }, { t: "大方开玩笑调侃，活跃气氛", s: [4, 2, 2, 3, 2, 4] }, { t: "礼貌微笑，思考如何妥善放置", s: [3, 3, 4, 2, 2, 3] }, { t: "直接惊喜，想出有趣点子回应", s: [4, 4, 2, 3, 3, 4] }] },
+    { q: "9. 面对网络恶意评论，你的心态是？", opts: [{ t: "难过，向信任的人倾诉寻求安慰", s: [2, 1, 2, 1, 5, 2] }, { t: "不在意，用更好的舞台成绩反击", s: [4, 4, 4, 4, 2, 4] }, { t: "理性分析来源，必要时交由法务处理", s: [3, 4, 3, 4, 2, 3] }, { t: "幽默自嘲化解，展现大度", s: [4, 3, 2, 3, 3, 4] }] },
+    { q: "10. 综艺导演让你即兴表演，你会？", opts: [{ t: "毫不怯场，立刻接梗制造笑点", s: [4, 2, 1, 3, 2, 4] }, { t: "害羞但努力配合不冷场", s: [2, 2, 3, 2, 3, 2] }, { t: "把话题抛给擅长综艺的成员", s: [2, 3, 3, 1, 5, 2] }, { t: "借机展现隐藏才华（如乐器/高音）", s: [4, 3, 4, 3, 2, 4] }] },
+    { q: "12. 学一支极高难度舞蹈，态度是？", opts: [{ t: "兴奋，挑战高难度", s: [4, 3, 4, 4, 2, 4] }, { t: "感到压力但加倍练习", s: [2, 3, 5, 3, 3, 3] }, { t: "先观察别人找发力方式", s: [3, 4, 3, 2, 2, 3] }, { t: "拉队友一起练习", s: [2, 2, 3, 2, 5, 2] }] },
+    { q: "13. 队友情绪低落时，你会？", opts: [{ t: "默默陪伴递零食", s: [2, 2, 3, 1, 5, 2] }, { t: "带她出去吃顿好的", s: [4, 2, 1, 2, 3, 3] }, { t: "理性分析问题给建议", s: [3, 4, 3, 3, 2, 3] }, { t: "用搞笑行为逗她", s: [4, 1, 2, 3, 3, 4] }] },
+    { q: "14. 自己决定下次概念风格，选？", opts: [{ t: "强烈 Girl Crush", s: [4, 4, 3, 4, 2, 4] }, { t: "优雅高贵艺术感", s: [3, 3, 4, 3, 3, 5] }, { t: "清新活泼元气", s: [4, 1, 2, 2, 3, 3] }, { t: "温暖治愈正能量", s: [2, 2, 3, 1, 5, 2] }] },
+    { q: "15. 演唱会安可环节，倾向于？", opts: [{ t: "尽情互动享受舞台", s: [4, 2, 1, 3, 3, 4] }, { t: "保持专业完美呈现", s: [3, 3, 5, 3, 2, 4] }, { t: "看粉丝队友感动流泪", s: [2, 1, 2, 1, 5, 2] }, { t: "自由奔跑展现放松", s: [4, 2, 2, 2, 2, 3] }] },
+    { q: "16. 面对不适合的人设，你会？", opts: [{ t: "私下沟通表达想法", s: [3, 4, 3, 3, 2, 3] }, { t: "先尝试配合不行再说", s: [2, 3, 3, 2, 3, 2] }, { t: "表面配合加入自己理解", s: [3, 3, 4, 3, 3, 4] }, { t: "委屈但为大局忍受", s: [1, 2, 3, 1, 5, 2] }] },
+    { q: "18. 获得一位的瞬间，第一反应？", opts: [{ t: "激动大哭感谢粉丝", s: [3, 1, 2, 2, 5, 2] }, { t: "保持微笑优雅感言", s: [3, 3, 4, 3, 2, 4] }, { t: "尽情欢呼跳跃释放", s: [4, 2, 1, 3, 2, 3] }, { t: "看队友紧紧拥抱", s: [2, 2, 3, 1, 5, 2] }] },
+    { q: "19. 面对不适合的时尚资源，你会？", opts: [{ t: "私下沟通表达想法", s: [3, 4, 3, 3, 2, 4] }, { t: "先尝试配合不行再说", s: [2, 3, 3, 2, 3, 2] }, { t: "表面配合加入自己理解", s: [3, 3, 4, 3, 3, 5] }, { t: "委屈但为大局忍受", s: [1, 2, 3, 1, 5, 2] }] },
+    { q: "20. 团队面临续约危机，你会？", opts: [{ t: "积极沟通，努力留住每个人", s: [2, 2, 3, 2, 5, 2] }, { t: "理性分析，尊重每个人选择", s: [2, 4, 3, 3, 2, 3] }, { t: "自己先决定，再影响他人", s: [3, 3, 3, 4, 2, 4] }, { t: "顺其自然，相信命运", s: [2, 2, 2, 1, 4, 2] }] },
+    { q: "21. 被邀请参加早期真人秀节目，你会？", opts: [{ t: "兴奋，展现真实的一面", s: [4, 2, 2, 3, 3, 4] }, { t: "谨慎，担心暴露太多隐私", s: [2, 4, 3, 2, 3, 3] }, { t: "看节目类型再决定", s: [2, 4, 3, 3, 2, 3] }, { t: "拒绝，专注音乐本业", s: [2, 4, 4, 4, 2, 3] }] },
+    { q: "22. 个人 Solo 成绩不如预期，你会？", opts: [{ t: "难过，但会默默反思改进", s: [2, 2, 3, 2, 4, 3] }, { t: "分析原因，调整策略再出发", s: [2, 4, 4, 4, 2, 3] }, { t: "无所谓，享受过程就好", s: [3, 2, 2, 1, 4, 2] }, { t: "寻求成员和粉丝的支持", s: [2, 2, 3, 1, 5, 2] }] },
+    { q: "23. 回顾早期偶像生涯，最看重什么？", opts: [{ t: "舞台上的辉煌时刻", s: [4, 3, 3, 4, 2, 4] }, { t: "和成员们的珍贵友谊", s: [2, 2, 3, 1, 5, 2] }, { t: "粉丝的支持和陪伴", s: [2, 2, 3, 2, 5, 2] }, { t: "个人成长和蜕变", s: [3, 4, 4, 3, 2, 4] }] },
+    { q: "24. 用一句话总结偶像生涯，希望是？", opts: [{ t: "燃烧自己照亮别人", s: [4, 2, 3, 3, 5, 3] }, { t: "打破规则定义新标准", s: [4, 4, 4, 4, 2, 5] }, { t: "享受舞台找到真实自己", s: [3, 2, 2, 2, 3, 4] }, { t: "做到极致不留遗憾", s: [3, 4, 5, 3, 2, 4] }] },
+    { q: "1. 早期打歌节目一位安可时，你通常会？", opts: [{ t: "激动落泪，发表长篇感言感谢公司和粉丝", s: [2, 2, 3, 1, 5, 2] }, { t: "保持优雅微笑，完美呈现最后一支舞", s: [3, 3, 4, 3, 2, 4] }, { t: "和成员们紧紧抱在一起，互相擦眼泪", s: [2, 1, 2, 1, 5, 2] }, { t: "趁机展示高音或舞蹈实力，震撼全场", s: [4, 3, 3, 4, 1, 3] }] },
+    { q: "4. 面对网络上的 Anti 粉丝（黑粉），你会？", opts: [{ t: "感到难过，但会默默努力用舞台成绩反击", s: [2, 2, 4, 3, 3, 3] }, { t: "完全不在意，甚至觉得是热度", s: [3, 3, 2, 4, 2, 4] }, { t: "让公司发律师函，理性维权", s: [2, 4, 3, 4, 2, 3] }, { t: "在粉丝见面会上温柔回应，感化他们", s: [2, 2, 3, 1, 5, 2] }] },
+    { q: "8. 突然获得一天完全没行程的假期，你会？", opts: [{ t: "去练习室加练，保持状态不能松懈", s: [2, 3, 5, 3, 2, 3] }, { t: "宅宿舍点外卖追剧，享受绝对个人空间", s: [1, 2, 1, 1, 2, 2] }, { t: "约朋友逛街探店，把行程排得满满", s: [4, 2, 1, 3, 3, 4] }, { t: "整理房间做规划，或学习一项新技能", s: [2, 4, 4, 2, 2, 3] }] },
+    { q: "11. 宿舍轮到你打扫卫生，你会？", opts: [{ t: "制定值日表严格执行", s: [2, 4, 5, 3, 2, 3] }, { t: "快速打扫表面", s: [2, 2, 2, 2, 2, 2] }, { t: "边打扫边放音乐", s: [3, 1, 2, 2, 3, 3] }, { t: "主动承担更多", s: [2, 3, 3, 2, 5, 2] }] },
+    { q: "17. 早期粉丝互动平台更新频率？", opts: [{ t: "每天分享日常碎碎念", s: [4, 1, 2, 2, 3, 3] }, { t: "不定期但每次精心修图", s: [3, 3, 4, 2, 2, 5] }, { t: "主要通知行程回复提问", s: [2, 4, 3, 3, 2, 2] }, { t: "发语音搞怪像聊天", s: [4, 2, 1, 3, 4, 3] }] }
+],
 gen3: [
     { q: "1. 早期直拍（Fancam）意外在网络上爆火，你会？", opts: [{ t: "激动落泪，发表长篇感言感谢粉丝的喜爱", s: [2, 2, 3, 1, 5, 2] }, { t: "保持优雅微笑，完美呈现最后一支舞", s: [3, 3, 4, 3, 2, 4] }, { t: "和成员们紧紧抱在一起，互相擦眼泪", s: [2, 1, 2, 1, 5, 2] }, { t: "趁机展示更高难度的舞蹈实力，震撼全场", s: [4, 3, 3, 4, 1, 4] }] },
     { q: "2. 面对转型演员的绝佳机遇，你的态度是？", opts: [{ t: "谨慎选择剧本，追求演技上的完美打磨", s: [2, 4, 4, 3, 2, 3] }, { t: "大胆尝试全新角色，不怕外界关于'爱豆演戏'的争议", s: [4, 2, 2, 4, 3, 4] }, { t: "听从公司安排，配合团队整体活动步调", s: [2, 3, 4, 2, 3, 2] }, { t: "先休息一段时间，调整状态再出发", s: [1, 3, 2, 1, 3, 2] }] },
@@ -334,28 +320,28 @@ gen1: [
   { name: '朴美善', desc: '综艺方向发展', summary: '一代女团成员，综艺方向发展，以亲民接地气和独特的喜剧时尚感成为团队中的开心果和调节者。', details: { E: '开朗活泼，综艺感极强，在团队中总是那个调节气氛的人，开朗活泼，综艺感极强，在团队中总是那个调节气氛、带来欢乐的人。', T: '思维灵活，善于变通，能在困境中找到出路，思维灵活，善于变通，能在困境中找到出路，是典型的乐观主义者。', D: '经历过低谷，但从未放弃，用日复一日的坚持诠释逆袭，经历过低谷，但从未放弃，用日复一日的坚持诠释了什么是逆袭。', A: '有着不服输的劲头，即使不被看好也要努力证明自己，有着不服输的劲头，即使不被看好也要努力证明自己，是真正的斗士。', C: '真诚善良，懂得感恩，总能在细节处照顾他人，真诚善良，懂得感恩，总能在细节处照顾他人，是贴心的好闺蜜。', S: '亲民接地气，具有独特的喜剧时尚感，亲民接地气，具有独特的喜剧时尚感和真实感，风格鲜明。' }, scores: [85, 55, 65, 70, 80, 75] },
   { name: '具荷拉', desc: '情怀讨论度极高', summary: 'Kara成员，去世后情怀和讨论度极高，以风格多变和极强的舞台消化能力成为团队中的核心支柱。', details: { E: '精力充沛，行动力极强，在团队中总是冲在最前面，精力充沛，行动力极强，在团队中总是那个冲在最前面、带动气氛的人。', T: '逻辑清晰，规划能力强，能井井有条地安排事务，逻辑清晰，规划能力强，能井井有条地安排事务，让人信赖。', D: '公认的拼命三娘，自律到令人发指，公认的拼命三娘，自律到令人发指，用汗水和坚持诠释了什么是努力。', A: '有着不服输的韧劲，面对困难从不退缩，有着不服输的韧劲，面对困难从不退缩，用实力证明自己的力量。', C: '像大姐姐一样照顾队友，事无巨细，温暖又可靠，像大姐姐一样照顾队友，事无巨细，是团队中温暖又可靠的存在。', S: '风格多变，具有极强的舞台消化能力，风格多变，具有极强的舞台消化能力和话题度，是团队中的核心支柱。' }, scores: [75, 65, 85, 75, 85, 80] }
 ],
-  gen2: [
-    { name: '金泰妍', desc: '主唱天花板/感性实力', summary: '二代里综合热度最高，solo音源极强的主唱天花板。', details: { E: '舞台光芒四射，私下却偏向安静内敛，反差迷人。', T: '极强音乐感知与理性分析，精准把握平衡。', D: '业务标准极高，为完美舞台反复练习。', A: '内心强大，压力转化为动力，用作品说话。', C: '情感细腻歌声充满故事，用艺术连接情感。', S: '艺术气息浓厚，对音乐有独特见解。' }, scores: [65, 70, 75, 60, 80, 75] },
-    { name: '林允儿', desc: '国民初恋/神颜演员', summary: '演戏和代言持续，国内认知度极高的门面担当。', details: { E: '亲和力极强，笑容具有治愈力，在社交中如沐春风。', T: '情商极高处理圆融得体，总能找到平衡点。', D: '自律且坚持，转型背后是数年如一日打磨。', A: '目标清晰手段柔和，稳步达成长远规划。', C: '温柔善良优先考虑他人，是安心的定海神针。', S: '拥有无可挑剔的外貌与温柔气质，正统审美代表。' }, scores: [70, 65, 70, 50, 85, 80] },
-    { name: '裴秀智', desc: '国民初恋/跨界王者', summary: 'miss A成员，演戏和代言让热度跨圈的顶级代表。', details: { E: '活泼开朗像个小太阳，在团队中总是带来欢声笑语。', T: '思维灵活善于学习，能快速适应新环境并修正认知。', D: '从青涩起步，用肉眼可见的速度成长，背后是无数次练习。', A: '有着不服输的劲头，在专业上敢于争取展现野心。', C: '懂得感恩珍惜团队情谊，总能在细节处照顾前辈队友。', S: '风格多变，能完美消化各种概念与角色。' }, scores: [75, 60, 75, 65, 80, 85] },
-    { name: '郑秀妍', desc: '冰山公主/时尚主理人', summary: '退团后做品牌和 solo，争议度拉满的时尚Icon。', details: { E: '偏向高冷内敛，不擅长无效社交，只在专业领域展现光芒。', T: '极其理性看问题一针见血，不被情绪左右。', D: '对专业有着极高追求，为了一个细节可以反复练习。', A: '不在乎外界评价，只专注自我提升，用实力说话。', C: '看似冷漠，实则内心细腻，会用自己独特的方式默默关心。', S: '高冷理性，具有独特的清冷美感与时尚敏锐度。' }, scores: [60, 75, 80, 70, 60, 90] },
-    { name: '权侑莉', desc: '黑珍珠/全能多栖', summary: '综艺和演戏维持热度的全能型成员。', details: { E: '精力充沛行动力极强，冲在最前面带动气氛。', T: '逻辑清晰规划能力强，井井有条安排事务。', D: '公认的拼命三娘，自律到令人发指。', A: '不服输的韧劲，面对困难从不退缩。', C: '像大姐姐一样照顾队友，温暖又可靠。', S: '风格稳重，具有领导者的气场。' }, scores: [70, 65, 70, 60, 75, 75] },
-    { name: '崔秀英', desc: '长腿幽默/演员转型', summary: '演戏和综艺有曝光的幽默担当。', details: { E: '开朗活泼综艺感极强，调节气氛带来欢乐。', T: '思维灵活善于变通，在困境中找到出路。', D: '经历过低谷从未放弃，用坚持诠释逆袭。', A: '不服输的劲头，即使不被看好也要证明自己。', C: '真诚善良懂得感恩，总能在细节处照顾他人。', S: '风格亲民，容易拉近与大众的距离。' }, scores: [75, 70, 65, 60, 80, 70] },
-    { name: '金孝渊', desc: '舞蹈女王/DJ时尚', summary: '舞蹈综艺和活动有话题的实力派。', details: { E: '天生属于舞台，拥有极强的表现力和控场能力。', T: '思维国际化，视野开阔，做决策果断且极具前瞻性。', D: '对专业要求严苛，为了完美舞台可以付出超乎常人的努力。', A: '拥有极强的野心和攻击性，敢于挑战权威。', C: '看似高冷霸气，实则对团队极其护短。', S: '气场强大，具有女王般的时尚表现力。' }, scores: [85, 60, 80, 75, 70, 85] },
-    { name: '李顺圭', desc: '能量维他命/综艺感', summary: '综艺感强，老粉情怀高的活力源泉。', details: { E: '亲和力极强，笑容具有治愈力，在社交中如沐春风。', T: '情商极高，处理问题圆融得体，能在复杂关系中找到平衡。', D: '自律且坚持，转型背后是数年如一日的台词与表演打磨。', A: '目标清晰但手段柔和，不与人起冲突，稳步达成规划。', C: '温柔善良，总是优先考虑他人感受，是让人安心的定海神针。', S: '温柔优雅，具有传统的东方美感。' }, scores: [80, 65, 70, 60, 85, 70] },
-    { name: '黄美英', desc: '笑眼主唱/海外发展', summary: 'solo 和活动有热度的海外发展代表。', details: { E: '情感丰富表达直接，是情绪放大器。', T: '偏向感性思维，依赖直觉和艺术感知。', D: '在热爱的领域极其专注，反复打磨。', A: '性格温和，倾向于用柔和方式化解矛盾。', C: '顶级共情能力，用声音和存在治愈人心。', S: '艺术气息浓厚，对音乐有独特见解。' }, scores: [75, 60, 75, 65, 80, 80] },
-    { name: '朴智妍', desc: '小泰妍/全能ACE', summary: '颜值和舞台话题多，争议事件也带来讨论。', details: { E: '表现欲强，敢于展现最真实的自己。', T: '看待问题角度独特，不随波逐流。', D: '对美和细节有偏执追求，付出极大自律。', A: '强大自信且不惧争议，敢于做话题中心。', C: '看似高冷，实则对认可的人极其护短。', S: '拥有独特审美与强烈个人风格，时尚感前卫。' }, scores: [75, 65, 75, 70, 70, 80] },
-    { name: '朴素妍', desc: '感性主唱/情怀加成', summary: '事件后情怀加成明显的主唱。', details: { E: '情感丰富，表达直接，在社交中容易与人产生共鸣。', T: '偏向感性思维，做决定时更依赖直觉和内心感受。', D: '在自己热爱的领域极其专注，愿意为了一首好歌反复打磨。', A: '性格温和，不喜欢激烈的竞争，更倾向于用柔和方式化解矛盾。', C: '拥有顶级的共情能力，能敏锐捕捉他人的情绪变化。', S: '温柔治愈，具有传统的东方美感。' }, scores: [65, 60, 70, 60, 85, 70] },
-    { name: '咸恩静', desc: '帅气队长/演员', summary: '演戏和综艺有曝光的帅气队长。', details: { E: '精力充沛行动力极强，冲在最前面带动气氛。', T: '逻辑清晰规划能力强，井井有条安排事务。', D: '公认的拼命三娘，自律到令人发指。', A: '不服输的韧劲，面对困难从不退缩。', C: '像大姐姐一样照顾队友，温暖又可靠。', S: '风格稳重，具有领导者的气场。' }, scores: [70, 70, 75, 65, 75, 70] },
-    { name: '全宝蓝', desc: '童颜反转/低调', summary: '颜值和风格有记忆点的低调实力派。', details: { E: '看似可爱无害，实则拥有惊人爆发力。', T: '超越年龄的成熟与理性，保持清醒头脑。', D: '默默努力不声张，日复一日打磨实力。', A: '不在乎名利，自有不可侵犯的底线。', C: '温柔细腻善于倾听，是极好的倾听者。', S: '风格清新，具有邻家女孩般的亲和力。' }, scores: [60, 65, 70, 50, 80, 65] },
-    { name: '朴孝敏', desc: '性感Icon/时尚', summary: 'solo 和时尚有热度的性感Icon。', details: { E: '自信大方敢于展现优势，是最耀眼的存在。', T: '直率坦诚看问题直接，不拐弯抹角。', D: '对身材管理极其严格，用极度自律换来曲线。', A: '极强自信不畏惧他人眼光，敢于做自己。', C: '看似高冷实则内心柔软，对朋友极其仗义。', S: '颜值讨论多，具有独特的时尚敏锐度。' }, scores: [75, 65, 75, 70, 70, 85] },
-    { name: '李居丽', desc: '门面担当/独特审美', summary: '颜值讨论多的独特审美代表。', details: { E: '偏向高冷内敛，不擅长无效社交，只在专业领域展现光芒。', T: '极其理性看问题一针见血，不被情绪左右。', D: '对专业有着极高追求，为了一个细节可以反复练习。', A: '不在乎外界评价，只专注自我提升。', C: '看似冷漠，实则内心细腻，会用自己独特的方式默默关心。', S: '高冷理性，具有独特的疏离美感。' }, scores: [65, 60, 70, 65, 70, 90] },
-    { name: '金泫雅', desc: '性感Icon/潮流大胆', summary: 'solo 风格大胆，争议度和热度都高。', details: { E: '舞台表现力极强，敢于展现性感与魅力。', T: '直觉敏锐对潮流有独特洞察力，捕捉风向。', D: '对舞台要求极高，为完美表演忍受伤痛。', A: '极强自信和野心，敢于打破常规做引领者。', C: '看似性感大胆，实则内心单纯对朋友仗义。', S: '极具前卫艺术感，是时尚界的先锋。' }, scores: [90, 65, 80, 85, 60, 95] },
-    { name: '朴嘉熙', desc: '霸气队长/舞技身材', summary: '舞技和身材话题多的霸气队长。', details: { E: '天生属于舞台，拥有极强的表现力和控场能力。', T: '思维国际化，视野开阔，做决策果断且极具前瞻性。', D: '对专业要求严苛，为了完美舞台可以付出超乎常人的努力。', A: '拥有极强的野心和攻击性，敢于挑战权威。', C: '看似高冷霸气，实则对团队极其护短。', S: '气场强大，具有女王般的时尚表现力。' }, scores: [75, 75, 85, 80, 75, 80] },
-    { name: 'Nana', desc: '世界最美/颜值讨论', summary: '世界最美面孔榜单常客，颜值讨论多。', details: { E: '亲和力极强，笑容具有治愈力，在社交中如沐春风。', T: '情商极高，处理问题圆融得体，能在复杂关系中找到平衡。', D: '自律且坚持，转型背后是数年如一日的台词与表演打磨。', A: '目标清晰但手段柔和，不与人起冲突，稳步达成规划。', C: '温柔善良，总是优先考虑他人感受，是让人安心的定海神针。', S: '拥有无可挑剔的外貌与温柔气质，正统审美代表。' }, scores: [70, 65, 80, 70, 70, 95] },
-    { name: '郑妮可', desc: '综艺感/Solo活动', summary: '综艺和 solo 有活动的活跃成员。', details: { E: '开朗活泼，综艺感极强，在团队中总是那个调节气氛的人。', T: '思维灵活，善于变通，能在困境中找到出路。', D: '经历过低谷，但从未放弃，用日复一日的坚持诠释逆袭。', A: '有着不服输的劲头，即使不被看好也要努力证明自己。', C: '真诚善良，懂得感恩，总能在细节处照顾他人。', S: '亲民接地气，具有独特的喜剧时尚感。' }, scores: [75, 65, 70, 65, 80, 75] },
-    { name: '具荷拉', desc: '坚韧努力/极高情怀', summary: '去世后情怀和讨论度极高的坚韧代表。', details: { E: '精力充沛，行动力极强，在团队中总是冲在最前面。', T: '逻辑清晰，规划能力强，能井井有条地安排事务。', D: '公认的拼命三娘，自律到令人发指。', A: '有着不服输的韧劲，面对困难从不退缩。', C: '像大姐姐一样照顾队友，事无巨细，温暖又可靠。', S: '风格多变，具有极强的舞台消化能力。' }, scores: [80, 70, 85, 75, 85, 85] }
-  ],
+gen2: [
+    { name: '金泰妍', desc: '主唱天花板/感性实力', summary: '拥有顶级唱功与丰富情感的感性实力派。', details: { E: '舞台光芒四射，私下安静内敛，反差迷人。', T: '极强音乐感知与理性分析，精准把握平衡。', D: '业务标准极高，为完美舞台反复练习。', A: '内心强大，压力转化为动力，用作品说话。', C: '情感细腻歌声充满故事，用艺术连接情感。', S: '艺术气质浓厚，对音乐有独特见解。' }, scores: [65, 70, 75, 60, 85, 80] },
+    { name: '林允儿', desc: '国民初恋/神颜演员', summary: '拥有无可挑剔外貌与温柔性格的国民初恋。', details: { E: '亲和力极强笑容治愈，社交中如沐春风。', T: '情商极高处理圆融，找到最舒适平衡点。', D: '自律且坚持，转型背后是数年如一日打磨。', A: '目标清晰手段柔和，稳步达成长远规划。', C: '温柔善良优先考虑他人，是安心的定海神针。', S: '拥有无可挑剔的外貌与温柔气质，正统审美代表。' }, scores: [70, 65, 75, 45, 90, 85] },
+    { name: '裴秀智', desc: '国民初恋/演员转型', summary: 'miss A成员，国民初恋，演戏和代言让热度跨圈。', details: { E: '亲和力极强，笑容具有治愈力，在社交中如沐春风。', T: '情商极高，处理问题圆融得体，能在复杂关系中找到平衡。', D: '自律且坚持，从偶像到演员的转型背后，是数年如一日的打磨。', A: '目标清晰但手段柔和，不与人起冲突，稳步达成规划。', C: '温柔善良，总是优先考虑他人感受，是让人安心的存在。', S: '气质清新优雅，具有极强的时尚表现力。' }, scores: [75, 65, 70, 40, 85, 90] },
+    { name: '郑秀妍', desc: '前少女时代成员/争议话题', summary: '少女时代前成员，退团后做品牌和 solo，争议度拉满。', details: { E: '自信大方，敢于展现自己的优势，在人群中总是最耀眼的存在。', T: '思维独立，有强烈的商业头脑和规划能力。', D: '对身材管理和自我形象有极高要求，极度自律。', A: '野心外露，不畏惧争议，敢于打破常规做自己。', C: '看似高冷，实则对认可的人极其护短，但更关注自我实现。', S: '时尚Icon，有独特的个人审美和品牌影响力。' }, scores: [80, 70, 80, 85, 55, 90] },
+    { name: '权侑莉', desc: '演员气质/优雅队长', summary: '少女时代成员，综艺和演戏维持热度，优雅知性。', details: { E: '偏内敛稳重，但在专业领域光芒四射。', T: '拥有极强的逻辑分析能力，面对危机能冷静拆解问题。', D: '典型的自律者，为了目标可以忍受痛苦，用坚韧诠释责任。', A: '野心内敛而深沉，不追求表面风光，只在乎守护珍视的人。', C: '拥有极强的共情力，总是默默观察需求，用实际行动给予支持。', S: '气质知性优雅，如同演员般有深度。' }, scores: [50, 75, 80, 55, 80, 80] },
+    { name: '崔秀英', desc: '综艺感强/独特演员', summary: '少女时代成员，演戏和综艺有曝光，个性鲜明。', details: { E: '开朗活泼，综艺感极强，在团队中总是那个调节气氛的人。', T: '思维灵活，善于变通，能在困境中找到出路。', D: '经历过低谷，但从未放弃，用日复一日的坚持诠释逆袭。', A: '有着不服输的劲头，即使不被看好也要努力证明自己。', C: '真诚善良，懂得感恩，总能在细节处照顾他人。', S: '风格多变，具有独特的个人魅力和话题性。' }, scores: [80, 60, 70, 75, 80, 75] },
+    { name: '金孝渊', desc: '主舞天花板/舞蹈狂热', summary: '少女时代主舞，舞蹈综艺和活动有话题，实力派。', details: { E: '天生属于舞台，拥有极强的表现力和控场能力，走到哪里都是绝对焦点。', T: '思维敏捷，懂得在复杂环境中保护自己的节奏。', D: '对专业有着极高的追求，为了一个动作可以反复练习，力求完美无瑕。', A: '拥有极强的野心，在舞蹈领域渴望做到极致。', C: '看似酷飒，实则对团队极其护短，会用自己强大的力量保护身边的人。', S: '舞台表现力极强，舞蹈风格独特且不可复制。' }, scores: [85, 60, 90, 80, 55, 80] },
+    { name: '李顺圭', desc: '综艺女王/搞笑担当', summary: '少女时代成员，综艺感强，老粉情怀高，搞笑担当。', details: { E: '精力充沛，行动力极强，在团队中总是那个冲在最前面、带动气氛的人。', T: '思维灵活，善于变通，能在困境中找到出路。', D: '经历过低谷，但从未放弃，用日复一日的坚持诠释了什么是努力。', A: '有着不服输的劲头，面对困难从不退缩，用实力证明自己的力量。', C: '像大姐姐一样照顾队友，事无巨细，是团队中温暖又可靠的存在。', S: '亲和力强，具有独特的综艺审美和搞笑风格。' }, scores: [85, 60, 70, 65, 85, 75] },
+    { name: '黄美英', desc: '海外活动/时尚资源', summary: '少女时代成员，solo 和活动有热度，海外资源丰富。', details: { E: '偏向高冷内敛，不擅长也不屑于无效社交，只在专业领域展现光芒。', T: '极其理性，看问题一针见血，不被情绪左右，是冷静大脑。', D: '对专业有着极高的追求，为了一个动作可以反复练习，力求完美无瑕。', A: '不在乎外界评价，只专注自我提升，用实力说话。', C: '看似冷漠，实则内心细腻，会用自己独特的方式默默关心在乎的人。', S: '气质清冷，具有国际范的时尚感和艺术审美。' }, scores: [55, 80, 85, 70, 60, 90] },
+    { name: '朴智妍', desc: '全能ACE/逆袭大女主', summary: 'T-ara成员，颜值和舞台话题多，争议事件也带来讨论。', details: { E: '舞台表现力极强，敢于展现性感与魅力，是人群中最耀眼的存在。', T: '思维敏捷，懂得在复杂环境中保护自己的节奏。', D: '对专业有着极高的追求，为了完美舞台可以付出超乎常人的努力。', A: '拥有极强的野心，在争议中用实力证明自己的价值。', C: '看似高冷，实则对团队极其护短，是可靠的好姐姐。', S: '时尚Icon，有独特的个人审美和舞台风格。' }, scores: [80, 60, 85, 80, 65, 90] },
+    { name: '朴素妍', desc: '主唱天花板/感性实力', summary: 'T-ara主唱，事件后情怀加成明显。', details: { E: '情感丰富，表达直接，在社交中容易与人产生共鸣。', T: '偏向感性思维，做决定时更依赖直觉和内心感受。', D: '在热爱的领域极其专注，愿意为了追求完美反复打磨。', A: '性格温和，不喜欢激烈竞争，更倾向于以柔克刚。', C: '拥有顶级的共情能力，是用声音和存在治愈人心的太阳。', S: '艺术气质浓厚，对音乐有独特见解。' }, scores: [60, 45, 70, 30, 90, 80] },
+    { name: '咸恩静', desc: '演员队长/坚韧担当', summary: 'T-ara成员，演戏和综艺有曝光，坚韧可靠。', details: { E: '偏向内敛稳重，不张扬但关键时刻总能挺身而出。', T: '逻辑分析能力强，面对团队危机能冷静拆解问题，找到最优解决方案。', D: '你是典型的自律者，为了目标可以忍受常人难以想象的痛苦。', A: '你的野心内敛而深沉，不追求表面的风光，只在乎是否真正守护住了珍视的人和事。', C: '你拥有极强的共情力，总是默默观察队友的需求，用最实际行动给予温暖的支持。', S: '气质沉稳，有演员的专业素养和独特魅力。' }, scores: [45, 75, 80, 55, 85, 70] },
+    { name: '全宝蓝', desc: '童颜反转/低调实力', summary: 'T-ara成员，颜值和风格有记忆点。', details: { E: '外表看似可爱无害，实则拥有极强的爆发力。', T: '拥有超越年龄的成熟与理性，看问题透彻，总能在复杂局面中保持清醒。', D: '默默努力，不声张不炫耀，用日复一日的坚持打磨实力。', A: '对名利看得很淡，更在乎自我价值的实现。', C: '温柔细腻，善于倾听，是极好的倾听者。', S: '童颜气质，具有独特的视觉反差魅力。' }, scores: [50, 65, 70, 30, 80, 85] },
+    { name: '朴孝敏', desc: 'Solo歌手/时尚Icon', summary: 'T-ara成员，solo 和时尚有热度。', details: { E: '舞台表现力极强，敢于展现性感与魅力，是人群中最耀眼的存在。', T: '对美和细节有着近乎偏执的追求，为了呈现完美状态愿意付出极大的自律与努力。', D: '你是典型的自律者，为了目标可以忍受常人难以想象的痛苦。', A: '你拥有强大的自信和不惧争议的勇气，敢于打破常规，做别人不敢做的“话题中心”。', C: '你看似高冷，实则对认可的人极其护短，会用自己独特的方式给予朋友最坚定的支持。', S: '时尚Icon，有独特的个人审美和品牌影响力。' }, scores: [75, 70, 80, 80, 60, 90] },
+    { name: '李居丽', desc: '独特神颜/话题女王', summary: 'T-ara成员，颜值讨论多。', details: { E: '你拥有极强的表现欲和独特的个人魅力，敢于在人群中展现最真实的自己，绝不平庸。', T: '你看待问题角度独特，不随波逐流，总能从 unconventional 的视角找到破局的关键。', D: '你对美和细节有着近乎偏执的追求，为了呈现完美状态愿意付出极大的自律与努力。', A: '你拥有强大的自信和不惧争议的勇气，敢于打破常规，做别人不敢做的“话题中心”。', C: '你看似高冷，实则对认可的人极其护短，会用自己独特的方式给予朋友最坚定的支持。', S: '拥有独特审美与强烈个人风格的话题女王。' }, scores: [70, 55, 70, 85, 55, 90] },
+    { name: '金泫雅', desc: '性感Icon/潮流大胆', summary: '4Minute成员，solo 风格大胆，争议度和热度都高。', details: { E: '你天生属于舞台，拥有极强的表现力和控场能力，走到哪里都是绝对的焦点。', T: '你思维国际化，视野开阔，做决策果断且极具前瞻性，不局限于眼前利益。', D: '你对专业要求严苛，为了国际舞台可以付出超乎常人的努力，是真正的“拼命三娘”。', A: '你拥有极强的野心和攻击性，敢于挑战权威，用霸气和实力碾压一切质疑。', C: '你看似高冷霸气，实则对团队极其护短，会用自己强大的力量保护身边的人。', S: '性感Icon，有强烈的个人风格和舞台魅力。' }, scores: [85, 65, 80, 90, 60, 95] },
+    { name: '朴嘉熙', desc: '队长担当/舞技身材', summary: 'After School队长，舞技和身材话题多。', details: { E: '自信大方，敢于展现自己的优势，在人群中总是那个最耀眼的存在。', T: '直率坦诚，看问题直接，不拐弯抹角，是典型的直肠子。', D: '对身材管理极其严格，用极度的自律换来了令人羡慕的曲线。', A: '你拥有极强的自信，不畏惧他人眼光，敢于做自己，是“自信美”的代言人。', C: '你看似高冷，实则内心柔软，对朋友极其仗义，是可靠的“好姐姐”。', S: '身材Icon，具有强烈的视觉冲击力和舞蹈风格。' }, scores: [75, 60, 90, 70, 65, 85] },
+    { name: 'Nana', desc: '世界最美面孔/颜值讨论', summary: 'After School成员，世界最美面孔榜单常客，颜值讨论多。', details: { E: '偏内敛稳重，但在专业领域光芒四射，具有极高的舞台表现力。', T: '拥有极强的逻辑分析能力，面对危机能冷静拆解问题，找到最优解决方案。', D: '你是典型的自律者，为了目标可以忍受常人难以想象的痛苦。', A: '你不在乎外界评价，只专注自我提升，用实力说话，是低调的强者。', C: '你看似冷漠，实则内心细腻，会用自己独特的方式默默关心在乎的人。', S: '世界最美面孔，具有独特的视觉魅力和时尚感。' }, scores: [60, 80, 75, 65, 60, 95] },
+    { name: '郑妮可', desc: '舞蹈实力/综艺活动', summary: 'Kara成员，综艺和 solo 有活动。', details: { E: '开朗活泼，综艺感极强，在团队中总是那个调节气氛、带来欢乐的人。', T: '思维灵活，善于变通，能在困境中找到出路，是典型的乐观主义者。', D: '经历过低谷，但从未放弃，用日复一日的坚持诠释了什么是“逆袭”。', A: '有着不服输的劲头，即使不被看好也要努力证明自己，是真正的“斗士”。', C: '真诚善良，懂得感恩，总能在细节处照顾他人，是贴心的“好闺蜜”。', S: '具有独特的舞蹈魅力和综艺感，风格多变。' }, scores: [80, 60, 70, 65, 80, 80] },
+    { name: '具荷拉', desc: '情怀讨论度极高', summary: 'Kara成员，去世后情怀和讨论度极高。', details: { E: '精力充沛，行动力极强，在团队中总是那个冲在最前面、带动气氛的人。', T: '逻辑清晰，规划能力强，作为队长能井井有条地安排团队事务，让人信赖。', D: '你是公认的拼命三娘，自律到令人发指，用汗水和坚持诠释了什么是努力。', A: '有着不服输的韧劲，面对困难从不退缩，用实力证明自己的力量。', C: '你像大姐姐一样照顾队友，事无巨细，是团队中温暖又可靠的存在。', S: '舞台表现力极强，具有独特的时尚魅力和极高的话题度。' }, scores: [85, 65, 80, 75, 90, 90] }
+],
 gen3: [
     { name: '裴秀智', desc: '国民初恋/演员转型', summary: 'miss A成员，国民初恋，演戏和代言让热度跨圈。', details: { E: '亲和力极强，笑容具有治愈力，在社交中如沐春风。', T: '情商极高，处理问题圆融得体，能在复杂关系中找到平衡。', D: '自律且坚持，从偶像到演员的转型背后，是数年如一日的打磨。', A: '目标清晰但手段柔和，不与人起冲突，稳步达成规划。', C: '温柔善良，总是优先考虑他人感受，是让人安心的存在。', S: '气质清新优雅，具有极强的时尚表现力和正统美感。' }, scores: [70, 65, 75, 45, 85, 90] },
     { name: '金雪炫', desc: '身材Icon/演员蜕变', summary: 'AOA门面，颜值和身材话题多，争议事件后讨论度更高。', details: { E: '自信大方，敢于展现自己的优势，在人群中总是最耀眼的存在。', T: '直率坦诚，看问题直接，不拐弯抹角。', D: '对身材管理极其严格，用极度的自律换来了令人羡慕的曲线。', A: '拥有极强的自信，不畏惧他人眼光，敢于做自己。', C: '看似高冷，实则内心柔软，对朋友极其仗义。', S: '身材Icon，具有强烈的视觉冲击力和独特的时尚品味。' }, scores: [75, 60, 85, 75, 65, 90] },
@@ -594,170 +580,29 @@ function scrollPage(direction) { const container = document.querySelector('.resu
 
 function generateFallbackSummary(scores, idol) { const maxDimIdx = scores.indexOf(Math.max(...scores)); return `你在${DIM_FULL[['E','T','D','A','C','S'][maxDimIdx]].name}维度表现突出，${idol.desc}，是团队中不可或缺的独特存在。`; }
 
-// 🚨 核心修改：绘制 6 维雷达图 (名字>维度>分数，上下布局)
 function drawRadarOnCanvas(canvas, scores, champions) {
   if (!canvas || !scores) return;
-  const ctx = canvas.getContext('2d');
-  // 放大画布
-  const w = 400, h = 400; 
-  canvas.width = w; canvas.height = h;
-  const cx = w / 2, cy = h / 2;
-  const R = 130; // 半径加大
-  const maxScore = 120; // 假设满分120 (24题*5分)
-  
+  const ctx = canvas.getContext('2d'), w = canvas.width, h = canvas.height, cx = w / 2, cy = h / 2, R = 75, maxScore = 120; // 假设最高120分
   ctx.clearRect(0, 0, w, h);
-  
-  // 1. 画网格 (6边形)
   for (let level = 1; level <= 5; level++) {
-    const r = (R / 5) * level;
-    ctx.beginPath();
-    for (let i = 0; i < 6; i++) {
-      const a = (Math.PI * 2 / 6) * i - Math.PI / 2;
-      const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
-      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-    }
+    const r = (R / 5) * level; ctx.beginPath();
+    for (let i = 0; i < 6; i++) { const a = (Math.PI * 2 / 6) * i - Math.PI / 2; const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
     ctx.closePath(); ctx.strokeStyle = '#333'; ctx.lineWidth = 1; ctx.stroke();
   }
-  // 2. 画轴线
-  for (let i = 0; i < 6; i++) {
-    const a = (Math.PI * 2 / 6) * i - Math.PI / 2;
-    ctx.beginPath(); ctx.moveTo(cx, cy);
-    ctx.lineTo(cx + R * Math.cos(a), cy + R * Math.sin(a));
-    ctx.strokeStyle = '#444'; ctx.stroke();
-  }
-  // 3. 画数据多边形
+  for (let i = 0; i < 6; i++) { const a = (Math.PI * 2 / 6) * i - Math.PI / 2; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + R * Math.cos(a), cy + R * Math.sin(a)); ctx.strokeStyle = '#444'; ctx.stroke(); }
   const points = []; ctx.beginPath();
-  for (let i = 0; i < 6; i++) {
-    const a = (Math.PI * 2 / 6) * i - Math.PI / 2;
-    const r = (scores[i] / maxScore) * R;
-    const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
-    points.push({ x, y, a });
-    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-  }
+  for (let i = 0; i < 6; i++) { const a = (Math.PI * 2 / 6) * i - Math.PI / 2; const r = (scores[i] / maxScore) * R; const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a); points.push({ x, y, a }); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
   ctx.closePath(); ctx.fillStyle = 'rgba(255,51,102,0.3)'; ctx.fill(); ctx.strokeStyle = '#ff3366'; ctx.lineWidth = 2; ctx.stroke();
-  
-  // 4. 画文字 (核心：层级与位置)
   ctx.textBaseline = 'middle';
   for (let i = 0; i < 6; i++) {
-    const p = points[i];
-    const cos = Math.cos(p.a);
-    // 智能对齐：右侧向左，左侧向右
-    ctx.textAlign = (Math.abs(cos) < 0.2) ? 'center' : (cos > 0 ? 'right' : 'left');
-    
-    const tx = cx + (R + 25) * cos;
-    const ty = cy + (R + 25) * Math.sin(p.a);
-    
-    // 判断上下角：0(Top), 1(Top-Right), 5(Top-Left) 为上三角
-    const isTop = (i === 0 || i === 1 || i === 5);
-    
-    // 层级 1: 维度名 (中等醒目)
-    ctx.font = 'bold 13px sans-serif'; ctx.fillStyle = '#ff6b9d';
-    ctx.fillText(DIM_NAMES[i], tx, isTop ? ty - 25 : ty + 25);
-    
-    // 层级 2: 分数 (最小/最暗)
-    ctx.font = '11px sans-serif'; ctx.fillStyle = '#888';
-    ctx.fillText(scores[i] + '分', tx, isTop ? ty - 10 : ty + 10);
-    
-    // 层级 3: 冠军名字 (最醒目)
+    const p = points[i]; ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI * 2); ctx.fillStyle = '#ff3366'; ctx.fill();
+    const cos = Math.cos(p.a); ctx.textAlign = (Math.abs(cos) < 0.2) ? 'center' : (cos > 0 ? 'right' : 'left');
+    const tx = cx + (R + 18) * cos, ty = cy + (R + 18) * Math.sin(p.a);
+    ctx.font = 'bold 12px sans-serif'; ctx.fillStyle = '#ff6b9d'; ctx.fillText(DIM_NAMES[i], tx, ty - 8);
+    ctx.fillStyle = '#fff'; ctx.fillText(scores[i] + '分', tx, ty + 8);
     const nm = (champions && champions[i]) ? String(champions[i]).split(' ')[0] : '';
-    if (nm) {
-      ctx.font = 'bold 15px sans-serif'; ctx.fillStyle = '#fff';
-      ctx.fillText(nm, tx, isTop ? ty + 10 : ty - 10); // 上三角名字在最下(靠近图)，下三角名字在最下(远离图) -> 修正：用户说下三角名字在字数下面
-      // 重新理解：上三角：名字 > 维度 > 分数 (从上到下)。下三角：分数 > 维度 > 名字 (从上到下，即名字在最下面)。
-      // 修正坐标：
-      // 上三角 (i=0,1,5): 名字(ty-30), 维度(ty-15), 分数(ty) -> 不对，用户说“名字在字数上面”。
-      // 让我们严格按用户：
-      // 上三角：名字(y-30), 维度(y-15), 分数(y) -> 名字在最上。
-      // 下三角：分数(y), 维度(y+15), 名字(y+30) -> 名字在最下。
-    }
+    if (nm) { const tx2 = cx + (R + 36) * cos, ty2 = cy + (R + 36) * Math.sin(p.a); ctx.font = '10px sans-serif'; ctx.fillStyle = '#888'; ctx.fillText(nm, tx2, ty2); }
   }
-  
-  // 重新绘制文字以确保位置绝对正确
-  for (let i = 0; i < 6; i++) {
-    const p = points[i];
-    const cos = Math.cos(p.a);
-    ctx.textAlign = (Math.abs(cos) < 0.2) ? 'center' : (cos > 0 ? 'right' : 'left');
-    const tx = cx + (R + 30) * cos;
-    const ty = cy + (R + 30) * Math.sin(p.a);
-    const isTop = (i === 0 || i === 1 || i === 5);
-    
-    const nm = (champions && champions[i]) ? String(champions[i]).split(' ')[0] : '';
-    
-    if (isTop) {
-      // 上三角：名字 > 维度 > 分数 (从上到下)
-      ctx.font = 'bold 14px sans-serif'; ctx.fillStyle = '#fff'; ctx.fillText(nm, tx, ty - 25);
-      ctx.font = 'bold 12px sans-serif'; ctx.fillStyle = '#ff6b9d'; ctx.fillText(DIM_NAMES[i], tx, ty - 10);
-      ctx.font = '11px sans-serif'; ctx.fillStyle = '#888'; ctx.fillText(scores[i] + '分', tx, ty + 5);
-    } else {
-      // 下三角：分数 > 维度 > 名字 (从上到下，即名字在最下面)
-      ctx.font = '11px sans-serif'; ctx.fillStyle = '#888'; ctx.fillText(scores[i] + '分', tx, ty - 5);
-      ctx.font = 'bold 12px sans-serif'; ctx.fillStyle = '#ff6b9d'; ctx.fillText(DIM_NAMES[i], tx, ty + 10);
-      ctx.font = 'bold 14px sans-serif'; ctx.fillStyle = '#fff'; ctx.fillText(nm, tx, ty + 25);
-    }
-  }
-}
-
-// 🚨 修改 renderCurrentHistory 以支持新布局
-function renderCurrentHistory() {
-  const container = document.getElementById('resultContent'); container.innerHTML = '';
-  const record = serverResults[currentHistoryIndex], r = record.result;
-  const dimKeys = ['E', 'T', 'D', 'A', 'C', 'S'];
-  
-  // 计算百分比
-  const totalScore = r.scores.reduce((a, b) => a + b, 0);
-  let percentText = dimKeys.map((key, i) => {
-    const p = Math.round((r.scores[i] / totalScore) * 100);
-    return `${p}%${DIM_FULL[key].name}`;
-  }).join(' + ');
-
-  // B 页文案
-  let bPageHtml = '';
-  if (r.details) {
-    bPageHtml = `<div class="b-page-dimensions-list">
-      ${dimKeys.map(k => `<div class="b-dim-section"><div class="b-dim-title">${DIM_FULL[k].name}</div><div class="b-dim-text">${r.details[k]}</div></div>`).join('')}
-    </div><div class="b-page-name-small">—— 匹配原型：${r.name} ——</div>`;
-  }
-
-  // C 页文案
-  let dimHtml = '';
-  for (let i = 0; i < 6; i++) {
-    const key = dimKeys[i], full = DIM_FULL[key], championName = r.dimChampions ? r.dimChampions[i] : '未知', score = r.scores[i], percent = (score / 120) * 100;
-    let dimDetailText = (r.details && r.details[key]) ? r.details[key] : full.desc;
-    dimHtml += `<div class="dim-block"><div class="dim-header-row"><span class="dim-name-score">${full.name} (得分: ${score})</span><span class="dim-champion">最像: ${championName}</span></div><div class="bar-container"><div class="bar-fill" style="width: ${percent}%;"></div></div><div class="dim-desc-text">💡 ${dimDetailText}</div></div>`;
-  }
-
-  container.innerHTML = `
-    <div class="page-card">
-      <div class="test-index-tag">第 ${currentHistoryIndex + 1} 次</div>
-      <div class="a-page-title">K-POP PERSONALITY ARCHIVE</div>
-      <h2 class="a-page-name">${r.name}</h2>
-      <div class="a-page-desc">${r.desc}</div>
-      <div class="radar-box">
-        <h4>✨ 你的 Kpop 本命魂 ✨</h4>
-        <canvas id="radarCanvas"></canvas>
-      </div>
-      <div class="soul-composition">
-        <strong>🔮 Kpop 本命魂构成</strong>
-        <div class="percent-text">${percentText}</div>
-      </div>
-      <div class="share-hint"><p>📸 长按截图保存海报</p><small>分享给朋友，看看是不是同一种灵魂</small></div>
-    </div>
-    
-    <div class="page-card">
-      <div class="test-index-tag">第 ${currentHistoryIndex + 1} 次</div>
-      <div class="b-page-desc-large">${r.desc}</div>
-      ${bPageHtml}
-      <div class="share-hint"><p>📸 长按截图保存海报</p><small>你的独特魅力，值得被看见</small></div>
-    </div>
-    
-    <div class="page-card">
-      <div class="test-index-tag">第 ${currentHistoryIndex + 1} 次</div>
-      <div class="c-page-title">🧬 六维深度解析</div>
-      ${dimHtml}
-      <div class="share-hint"><p>📸 长按截图保存海报</p><small>本档案基于你的选择生成 · 仅供趣味探索</small></div>
-    </div>
-  `;
-  setTimeout(() => { const canvas = document.getElementById('radarCanvas'); if (canvas) drawRadarOnCanvas(canvas, r.scores, r.dimChampions); }, 100);
 }
 
 document.getElementById('codeInput').addEventListener('input', function(e) { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); });
