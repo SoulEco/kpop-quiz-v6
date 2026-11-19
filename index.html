@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>K-pop 性格原型测试 (6维专业版)</title>
 <style>
-  /* 保持你之前的 CSS 样式不变，此处省略以节省篇幅，请保留原有的 <style> 内容 */
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   body { margin: 0; font-family: -apple-system, 'PingFang SC', sans-serif; background: #0a0a0a; color: #fff; min-height: 100vh; overflow: hidden; }
   .wrap { max-width: 480px; margin: 0 auto; padding: 24px; height: 100vh; display: flex; flex-direction: column; }
@@ -27,30 +26,43 @@
   .progress { height: 4px; background: #222; border-radius: 2px; overflow: hidden; margin-bottom: 24px; }
   .progress-fill { height: 100%; background: linear-gradient(90deg, #ff3366, #ff6b9d); width: 0%; transition: width 0.4s; }
   .q-text { font-size: 18px; line-height: 1.6; font-weight: 600; margin-bottom: 24px; }
-  .opt { width: 100%; padding: 14px; background: #151515; border: 1.5px solid #222; color: #fff; border-radius: 10px; margin-bottom: 10px; text-align: left; cursor: pointer; font-size: 14px; line-height: 1.5; }
+  .opt { width: 100%; padding: 14px; background: #151515; border: 1.5px solid #222; color: #fff; border-radius: 10px; margin-bottom: 10px; text-align: left; cursor: pointer; font-size: 14px; line-height: 1.5; display: block; }
   .opt:hover { border-color: #ff3366; }
   .opt.selected { border-color: #ff3366; background: #2a1018; }
-  .quiz-nav { display: flex; gap: 10px; margin-top: 8px; }
+  .quiz-nav { display: flex; gap: 10px; margin-top: 16px; }
   .btn-secondary { flex: 1; padding: 14px; background: #1a1a1a; color: #fff; border: 1px solid #333; border-radius: 12px; font-size: 15px; cursor: pointer; }
   .btn-secondary:disabled { opacity: 0.3; cursor: not-allowed; }
-  .result-container { flex: 1; height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; -ms-overflow-style: none; position: relative; }
+  
+  /* 🚨 结果页：5页垂直滚动布局 */
+  .result-container { flex: 1; height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; -ms-overflow-style: none; position: relative; display: flex; flex-direction: column; align-items: center; padding: 10px 0; }
   .result-container::-webkit-scrollbar { display: none; }
-  .page-card { min-height: 100%; scroll-snap-align: start; background: #151515; border: 1px solid #2a2a2a; border-radius: 20px; padding: 30px 24px 60px 24px; margin-bottom: 20px; position: relative; display: flex; flex-direction: column; }
+  .page-card { 
+    aspect-ratio: 3/4; width: 95%; max-height: 90vh; scroll-snap-align: center; 
+    background: #151515; border: 1px solid #2a2a2a; border-radius: 20px; 
+    padding: 30px 24px 60px 24px; margin-bottom: 20px; position: relative; display: flex; flex-direction: column; overflow: hidden; 
+  }
   .page-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #ff3366, #ff6b9d); border-radius: 20px 20px 0 0; }
   .test-index-tag { position: absolute; top: 15px; right: 15px; background: rgba(255,51,102,0.15); color: #ff6b9d; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; }
-  .a-page-title { font-size: 12px; color: #ff6b9d; letter-spacing: 2px; text-align: center; margin-bottom: 20px; }
+  
+  .a-page-title { font-size: 12px; color: #ff6b9d; letter-spacing: 2px; text-align: center; margin-bottom: 20px; margin-top: 10px; }
   .a-page-name { font-size: 32px; font-weight: 800; text-align: center; margin: 0 0 10px; background: linear-gradient(135deg, #fff, #ff6b9d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   .a-page-desc { font-size: 18px; font-weight: bold; text-align: center; color: #fff; margin: 0 0 20px; }
-  .radar-box { background: #0f0f0f; border-radius: 12px; padding: 20px; margin: 20px 0; text-align: center; flex-shrink: 0; }
-  .radar-box h4 { margin: 0 0 15px; font-size: 14px; color: #ff6b9d; }
-  canvas { max-width: 100%; height: auto; }
-  .a-page-summary { font-size: 14px; color: #aaa; line-height: 1.6; text-align: center; background: rgba(255,51,102,0.05); padding: 12px; border-radius: 8px; border-left: 3px solid #ff3366; }
+  
+  /* 🚨 雷达图区域放大 */
+  .radar-box { background: #0f0f0f; border-radius: 12px; padding: 20px; margin: 20px 0; text-align: center; flex-shrink: 0; border: 1px solid #222; }
+  .radar-box h4 { margin: 0 0 15px; font-size: 18px; color: #ff6b9d; font-weight: bold; letter-spacing: 1px; }
+  canvas { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+  
+  /* 🚨 匹配依据替换为 summary */
+  .a-page-summary { font-size: 14px; color: #ccc; line-height: 1.6; text-align: center; background: rgba(255,51,102,0.05); padding: 16px; border-radius: 8px; border-left: 3px solid #ff3366; margin-top: 10px; }
+  
   .b-page-desc-large { font-size: 28px; font-weight: 900; text-align: center; color: #fff; margin: 0 0 25px; line-height: 1.3; letter-spacing: 1px; background: linear-gradient(135deg, #fff, #ff6b9d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .b-page-dimensions-list { display: flex; flex-direction: column; gap: 20px; flex: 1; overflow-y: auto; }
+  .b-page-dimensions-list { display: flex; flex-direction: column; gap: 20px; flex: 1; overflow-y: auto; padding-right: 5px; }
   .b-dim-section { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 16px; border-left: 3px solid #ff3366; }
   .b-dim-title { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
   .b-dim-text { font-size: 14px; color: #ccc; line-height: 1.6; }
   .b-page-name-small { font-size: 13px; text-align: center; color: #555; margin-top: 25px; letter-spacing: 2px; text-transform: uppercase; font-weight: 400; }
+  
   .c-page-title { font-size: 18px; font-weight: bold; color: #ff6b9d; text-align: center; margin: 0 0 25px; }
   .dim-block { margin-bottom: 24px; border-bottom: 1px solid #222; padding-bottom: 20px; }
   .dim-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
@@ -60,11 +72,14 @@
   .bar-container { width: 100%; height: 10px; background: transparent; border: 1px solid #ff3366; border-radius: 5px; margin: 10px 0; position: relative; overflow: hidden; }
   .bar-fill { height: 100%; background: #ff3366; border-radius: 5px; }
   .dim-desc-text { font-size: 12px; color: #888; line-height: 1.5; margin-top: 8px; }
+  
+  /* 🚨 悬浮导航按钮 */
   #scrollNav { position: fixed; right: 15px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 15px; z-index: 100; }
   .scroll-btn { width: 44px; height: 44px; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; opacity: 0; pointer-events: none; transform: scale(0.8); }
   .scroll-btn.visible { opacity: 1; pointer-events: auto; transform: scale(1); }
   .scroll-btn:hover { background: rgba(255, 51, 102, 0.25); border-color: #ff3366; }
   .scroll-btn svg { width: 24px; height: 24px; fill: #fff; }
+  
   .share-hint { margin-top: auto; padding-top: 20px; text-align: center; border-top: 1px dashed #333; }
   .share-hint p { color: #ff6b9d; font-size: 14px; font-weight: bold; margin: 0 0 4px; }
   .share-hint small { color: #666; font-size: 11px; }
@@ -163,7 +178,6 @@ const DIM_FULL = {
   S: { name: '独特审美', desc: '你的时尚感与个人风格不可替代性。高分代表时尚Icon、概念消化者；低分代表正统、邻家。' }
 };
 
-// 🚨 此处仅展示 Gen 1 的完整 24 题 + 20 人数据。Gen 2-5 结构完全相同，情境替换为该代特征。
 const questions = {
   gen1: [
     { q: "1. 早期打歌节目一位安可时，你通常会？", opts: [{ t: "激动落泪，发表长篇感言感谢公司和粉丝", s: [2, 2, 3, 1, 5, 2] }, { t: "保持优雅微笑，完美呈现最后一支舞", s: [3, 3, 4, 3, 2, 4] }, { t: "和成员们紧紧抱在一起，互相擦眼泪", s: [2, 1, 2, 1, 5, 2] }, { t: "趁机展示高音或舞蹈实力，震撼全场", s: [4, 3, 3, 4, 1, 3] }] },
@@ -191,7 +205,7 @@ const questions = {
     { q: "23. 回顾早期偶像生涯，最看重什么？", opts: [{ t: "舞台上的辉煌时刻", s: [4, 3, 3, 4, 2, 4] }, { t: "和成员们的珍贵友谊", s: [2, 2, 3, 1, 5, 2] }, { t: "粉丝的支持和陪伴", s: [2, 2, 3, 2, 5, 2] }, { t: "个人成长和蜕变", s: [3, 4, 4, 3, 2, 4] }] },
     { q: "24. 用一句话总结偶像生涯，希望是？", opts: [{ t: "燃烧自己照亮别人", s: [4, 2, 3, 3, 5, 3] }, { t: "打破规则定义新标准", s: [4, 4, 4, 4, 2, 5] }, { t: "享受舞台找到真实自己", s: [3, 2, 2, 2, 3, 4] }, { t: "做到极致不留遗憾", s: [3, 4, 5, 3, 2, 4] }] }
   ],
-gen2: [
+  gen2: [
     { q: "2. 面对转型演员的机遇，你的态度是？", opts: [{ t: "谨慎选择剧本，追求演技上的完美", s: [2, 4, 4, 3, 2, 3] }, { t: "大胆尝试全新角色，不怕外界争议", s: [4, 2, 2, 4, 3, 4] }, { t: "听从公司安排，配合团队整体步调", s: [2, 3, 4, 2, 3, 2] }, { t: "先休息一段时间，调整状态再出发", s: [1, 3, 2, 1, 3, 2] }] },
     { q: "3. 团队对专辑概念有严重分歧，你通常？", opts: [{ t: "列出利弊分析，用数据和过往案例说服大家", s: [3, 4, 3, 3, 2, 3] }, { t: "当和事佬，努力找让所有人都满意的方案", s: [2, 2, 3, 1, 5, 2] }, { t: "提出最大胆颠覆的新想法，直接打破僵局", s: [4, 3, 2, 4, 3, 4] }, { t: "支持队长最终决定，全力配合执行到位", s: [3, 3, 4, 2, 3, 2] }] },
     { q: "5. 公司安排你去参加一个早期不擅长的综艺，你会？", opts: [{ t: "提前做功课，努力表现不冷场", s: [3, 3, 4, 3, 2, 3] }, { t: "展现真实的一面，哪怕笨拙也很可爱", s: [4, 1, 2, 2, 3, 3] }, { t: "把机会让给更有综艺感的成员", s: [2, 3, 3, 1, 5, 2] }, { t: "直接拒绝，专注音乐本业", s: [2, 4, 3, 4, 2, 3] }] },
@@ -216,8 +230,8 @@ gen2: [
     { q: "8. 突然获得一天完全没行程的假期，你会？", opts: [{ t: "去练习室加练，保持状态不能松懈", s: [2, 3, 5, 3, 2, 3] }, { t: "宅宿舍点外卖追剧，享受绝对个人空间", s: [1, 2, 1, 1, 2, 2] }, { t: "约朋友逛街探店，把行程排得满满", s: [4, 2, 1, 3, 3, 4] }, { t: "整理房间做规划，或学习一项新技能", s: [2, 4, 4, 2, 2, 3] }] },
     { q: "11. 宿舍轮到你打扫卫生，你会？", opts: [{ t: "制定值日表严格执行", s: [2, 4, 5, 3, 2, 3] }, { t: "快速打扫表面", s: [2, 2, 2, 2, 2, 2] }, { t: "边打扫边放音乐", s: [3, 1, 2, 2, 3, 3] }, { t: "主动承担更多", s: [2, 3, 3, 2, 5, 2] }] },
     { q: "17. 早期粉丝互动平台更新频率？", opts: [{ t: "每天分享日常碎碎念", s: [4, 1, 2, 2, 3, 3] }, { t: "不定期但每次精心修图", s: [3, 3, 4, 2, 2, 5] }, { t: "主要通知行程回复提问", s: [2, 4, 3, 3, 2, 2] }, { t: "发语音搞怪像聊天", s: [4, 2, 1, 3, 4, 3] }] }
-],
-gen3: [
+  ],
+  gen3: [
     { q: "1. 早期直拍（Fancam）意外在网络上爆火，你会？", opts: [{ t: "激动落泪，发表长篇感言感谢粉丝的喜爱", s: [2, 2, 3, 1, 5, 2] }, { t: "保持优雅微笑，完美呈现最后一支舞", s: [3, 3, 4, 3, 2, 4] }, { t: "和成员们紧紧抱在一起，互相擦眼泪", s: [2, 1, 2, 1, 5, 2] }, { t: "趁机展示更高难度的舞蹈实力，震撼全场", s: [4, 3, 3, 4, 1, 4] }] },
     { q: "2. 面对转型演员的绝佳机遇，你的态度是？", opts: [{ t: "谨慎选择剧本，追求演技上的完美打磨", s: [2, 4, 4, 3, 2, 3] }, { t: "大胆尝试全新角色，不怕外界关于'爱豆演戏'的争议", s: [4, 2, 2, 4, 3, 4] }, { t: "听从公司安排，配合团队整体活动步调", s: [2, 3, 4, 2, 3, 2] }, { t: "先休息一段时间，调整状态再出发", s: [1, 3, 2, 1, 3, 2] }] },
     { q: "3. 团队对回归的'性感'概念有严重分歧，你通常？", opts: [{ t: "列出利弊分析，用数据和过往案例说服大家", s: [3, 4, 3, 3, 2, 3] }, { t: "当和事佬，努力找让所有人都满意的折中方案", s: [2, 2, 3, 1, 5, 2] }, { t: "提出最大胆颠覆的新想法，直接打破僵局", s: [4, 3, 2, 4, 3, 4] }, { t: "支持队长最终决定，全力配合执行到位", s: [3, 3, 4, 2, 3, 2] }] },
@@ -242,8 +256,8 @@ gen3: [
     { q: "22. 个人 Solo 成绩不如预期，你会？", opts: [{ t: "难过，但会默默反思改进", s: [2, 2, 3, 2, 4, 3] }, { t: "分析原因，调整策略再出发", s: [2, 4, 4, 4, 2, 3] }, { t: "无所谓，享受过程就好", s: [3, 2, 2, 1, 4, 2] }, { t: "寻求成员和粉丝的支持与鼓励", s: [2, 2, 3, 1, 5, 2] }] },
     { q: "23. 回顾早期偶像生涯，你最看重什么？", opts: [{ t: "舞台上的辉煌时刻和直拍数据", s: [4, 3, 3, 4, 2, 4] }, { t: "和成员们一起度过的珍贵友谊", s: [2, 2, 3, 1, 5, 2] }, { t: "粉丝的支持和一路的陪伴", s: [2, 2, 3, 2, 5, 2] }, { t: "个人的成长和全方位的蜕变", s: [3, 4, 4, 3, 2, 4] }] },
     { q: "24. 用一句话总结偶像生涯，希望是？", opts: [{ t: "燃烧自己照亮别人，成为团队的光", s: [4, 2, 3, 3, 5, 3] }, { t: "打破规则定义新标准，留下传奇", s: [4, 4, 4, 4, 2, 5] }, { t: "享受舞台找到真实自己，快乐最重要", s: [3, 2, 2, 2, 3, 4] }, { t: "做到极致不留遗憾，每一步都扎实", s: [3, 4, 5, 3, 2, 4] }] }
-],
-gen4: [
+  ],
+  gen4: [
     { q: "1. 你的个人 TikTok 舞蹈挑战意外在全球爆火，你会？", opts: [{ t: "激动落泪，发长文感谢全球粉丝的喜爱", s: [2, 2, 3, 1, 5, 2] }, { t: "保持专业，立刻推出更高难度的挑战版本", s: [3, 3, 4, 3, 2, 4] }, { t: "和成员们紧紧抱在一起，互相庆祝", s: [2, 1, 2, 1, 5, 2] }, { t: "趁机展示更独特的个人魅力，震撼全场", s: [4, 3, 3, 4, 1, 5] }] },
     { q: "2. 面对进军欧美市场或转型演员的绝佳机遇，你的态度是？", opts: [{ t: "谨慎评估，追求演技或音乐上的完美打磨", s: [2, 4, 4, 3, 2, 3] }, { t: "大胆尝试全新领域，不怕外界关于'爱豆跨界'的争议", s: [4, 2, 2, 4, 3, 5] }, { t: "听从公司安排，配合团队整体活动步调", s: [2, 3, 4, 2, 3, 2] }, { t: "先休息一段时间，调整状态再出发", s: [1, 3, 2, 1, 3, 2] }] },
     { q: "3. 团队对回归的'Girl Crush'或'元宇宙'概念有严重分歧，你通常？", opts: [{ t: "列出利弊分析，用数据和过往案例说服大家", s: [3, 4, 3, 3, 2, 3] }, { t: "当和事佬，努力找让所有人都满意的折中方案", s: [2, 2, 3, 1, 5, 2] }, { t: "提出最大胆颠覆的新想法，直接打破僵局", s: [4, 3, 2, 4, 3, 5] }, { t: "支持队长最终决定，全力配合执行到位", s: [3, 3, 4, 2, 3, 2] }] },
@@ -268,8 +282,8 @@ gen4: [
     { q: "22. 个人 Solo 成绩或直拍数据不如预期，你会？", opts: [{ t: "难过，但会默默反思改进", s: [2, 2, 3, 2, 4, 3] }, { t: "分析原因，调整策略再出发", s: [2, 4, 4, 4, 2, 3] }, { t: "无所谓，享受过程就好", s: [3, 2, 2, 1, 4, 2] }, { t: "寻求成员和粉丝的支持与鼓励", s: [2, 2, 3, 1, 5, 2] }] },
     { q: "23. 回顾四代偶像生涯，你最看重什么？", opts: [{ t: "舞台上的辉煌时刻和直拍数据", s: [4, 3, 3, 4, 2, 4] }, { t: "和成员们一起度过的珍贵友谊", s: [2, 2, 3, 1, 5, 2] }, { t: "粉丝的支持和一路的陪伴", s: [2, 2, 3, 2, 5, 2] }, { t: "个人的成长和全方位的蜕变", s: [3, 4, 4, 3, 2, 4] }] },
     { q: "24. 用一句话总结你的偶像生涯目标，希望是？", opts: [{ t: "燃烧自己照亮别人，成为团队的光", s: [4, 2, 3, 3, 5, 3] }, { t: "打破规则定义新标准，留下传奇", s: [4, 4, 4, 4, 2, 5] }, { t: "享受舞台找到真实自己，快乐最重要", s: [3, 2, 2, 2, 3, 4] }, { t: "做到极致不留遗憾，每一步都扎实", s: [3, 4, 5, 3, 2, 4] }] }
-],
-gen5: [
+  ],
+  gen5: [
     { q: "1. 你的 TikTok 舞蹈挑战意外在全球病毒式传播，你会？", opts: [{ t: "激动落泪，发长文感谢全球粉丝的喜爱", s: [2, 2, 3, 1, 5, 2] }, { t: "保持专业，立刻推出更高难度的挑战版本", s: [3, 3, 4, 3, 2, 4] }, { t: "和成员们紧紧抱在一起，互相庆祝", s: [2, 1, 2, 1, 5, 2] }, { t: "趁机展示更独特的个人魅力，震撼全场", s: [4, 3, 3, 4, 1, 5] }] },
     { q: "2. 面对强烈的'大女主'或'AI概念'造型，你的态度是？", opts: [{ t: "谨慎评估，追求视觉上的完美打磨", s: [2, 4, 4, 3, 2, 3] }, { t: "大胆尝试全新领域，不怕外界关于'概念太超前'的争议", s: [4, 2, 2, 4, 3, 5] }, { t: "听从公司安排，配合团队整体活动步调", s: [2, 3, 4, 2, 3, 2] }, { t: "先休息一段时间，调整状态再出发", s: [1, 3, 2, 1, 3, 2] }] },
     { q: "3. 团队对回归的'Y2K'或'Teen Fresh'概念有严重分歧，你通常？", opts: [{ t: "列出利弊分析，用数据和过往案例说服大家", s: [3, 4, 3, 3, 2, 3] }, { t: "当和事佬，努力找让所有人都满意的折中方案", s: [2, 2, 3, 1, 5, 2] }, { t: "提出最大胆颠覆的新想法，直接打破僵局", s: [4, 3, 2, 4, 3, 5] }, { t: "支持队长最终决定，全力配合执行到位", s: [3, 3, 4, 2, 3, 2] }] },
@@ -294,7 +308,7 @@ gen5: [
     { q: "22. 个人 Solo 成绩或直拍数据不如预期，你会？", opts: [{ t: "难过，但会默默反思改进", s: [2, 2, 3, 2, 4, 3] }, { t: "分析原因，调整策略再出发", s: [2, 4, 4, 4, 2, 3] }, { t: "无所谓，享受过程就好", s: [3, 2, 2, 1, 4, 2] }, { t: "寻求成员和粉丝的支持与鼓励", s: [2, 2, 3, 1, 5, 2] }] },
     { q: "23. 回顾五代偶像生涯，你最看重什么？", opts: [{ t: "舞台上的辉煌时刻和直拍数据", s: [4, 3, 3, 4, 2, 4] }, { t: "和成员们一起度过的珍贵友谊", s: [2, 2, 3, 1, 5, 2] }, { t: "粉丝的支持和一路的陪伴", s: [2, 2, 3, 2, 5, 2] }, { t: "个人的成长和全方位的蜕变", s: [3, 4, 4, 3, 2, 4] }] },
     { q: "24. 用一句话总结你的偶像生涯目标，希望是？", opts: [{ t: "燃烧自己照亮别人，成为团队的光", s: [4, 2, 3, 3, 5, 3] }, { t: "打破规则定义新标准，留下传奇", s: [4, 4, 4, 4, 2, 5] }, { t: "享受舞台找到真实自己，快乐最重要", s: [3, 2, 2, 2, 3, 4] }, { t: "做到极致不留遗憾，每一步都扎实", s: [3, 4, 5, 3, 2, 4] }] }
-]
+  ]
 };
 
 const idols = {
@@ -449,7 +463,7 @@ async function checkCode() {
 
 function selectGen(gen) {
   if (remaining <= 0) return alert('测试次数已用完，无法再次测试');
-  if (!questions[gen]) return alert('该代际题目正在筹备中，请先测试一代！'); // 临时保护
+  if (!questions[gen]) return alert('该代际题目正在筹备中，请先测试一代！');
   currentGen = gen; answers = new Array(24).fill(null); currentQ = 0;
   document.getElementById('remainHint').innerText = `剩余 ${remaining} 次`;
   show('page-quiz'); renderQuestion();
@@ -544,25 +558,87 @@ function renderTabs() {
 function renderCurrentHistory() {
   const container = document.getElementById('resultContent'); container.innerHTML = '';
   const record = serverResults[currentHistoryIndex], r = record.result;
-  const dimKeys = ['E', 'T', 'D', 'A', 'C', 'S'], maxScore = 120; // 24题 * 5分(假设最高5分，实际按数据调整，此处示例为120)
-  let bPageHtml = '';
-  if (r.details) {
-    bPageHtml = `<div class="b-page-dimensions-list">
-      <div class="b-dim-section"><div class="b-dim-title">⚡ ${DIM_FULL.E.name}</div><div class="b-dim-text">${r.details.E}</div></div>
-      <div class="b-dim-section"><div class="b-dim-title">🧠 ${DIM_FULL.T.name}</div><div class="b-dim-text">${r.details.T}</div></div>
-      <div class="b-dim-section"><div class="b-dim-title">🎯 ${DIM_FULL.D.name}</div><div class="b-dim-text">${r.details.D}</div></div>
-      <div class="b-dim-section"><div class="b-dim-title">🔥 ${DIM_FULL.A.name}</div><div class="b-dim-text">${r.details.A}</div></div>
-      <div class="b-dim-section"><div class="b-dim-title">💖 ${DIM_FULL.C.name}</div><div class="b-dim-text">${r.details.C}</div></div>
-      <div class="b-dim-section"><div class="b-dim-title">🎨 ${DIM_FULL.S.name}</div><div class="b-dim-text">${r.details.S}</div></div>
-    </div><div class="b-page-name-small">—— 匹配原型：${r.name} ——</div>`;
-  }
-  let dimHtml = '';
-  for (let i = 0; i < 6; i++) {
+  const dimKeys = ['E', 'T', 'D', 'A', 'C', 'S'], maxScore = 120; 
+  
+  // 🚨 页面 A: 雷达图 + Summary
+  const pageA = `
+    <div class="page-card">
+      <div class="test-index-tag">第 ${currentHistoryIndex + 1} 次测试</div>
+      <div class="a-page-title">K-POP PERSONALITY ARCHIVE</div>
+      <h2 class="a-page-name">${r.name}</h2>
+      <div class="a-page-desc">${r.desc}</div>
+      <div class="radar-box">
+        <h4>你的Kpop本命魂</h4>
+        <canvas id="radarCanvas" width="400" height="400"></canvas>
+      </div>
+      <div class="a-page-summary">${r.summary || generateFallbackSummary(r.scores, r)}</div>
+      <div class="share-hint"><p>📸 长按上方区域截图保存</p><small>分享给朋友，看看是不是同一种灵魂</small></div>
+    </div>
+  `;
+
+  // 🚨 页面 B: 维度 1-3 (E, T, D)
+  const pageB = `
+    <div class="page-card">
+      <div class="test-index-tag">第 ${currentHistoryIndex + 1} 次测试</div>
+      <div class="b-page-desc-large">${r.desc}</div>
+      <div class="b-page-dimensions-list">
+        <div class="b-dim-section"><div class="b-dim-title">⚡ ${DIM_FULL.E.name}</div><div class="b-dim-text">${r.details.E}</div></div>
+        <div class="b-dim-section"><div class="b-dim-title">🧠 ${DIM_FULL.T.name}</div><div class="b-dim-text">${r.details.T}</div></div>
+        <div class="b-dim-section"><div class="b-dim-title">🎯 ${DIM_FULL.D.name}</div><div class="b-dim-text">${r.details.D}</div></div>
+      </div>
+      <div class="b-page-name-small">—— 匹配原型：${r.name} ——</div>
+      <div class="share-hint"><p>📸 长按上方区域截图保存</p><small>你的独特魅力，值得被看见</small></div>
+    </div>
+  `;
+
+  // 🚨 页面 C: 维度 4-6 (A, C, S)
+  const pageC = `
+    <div class="page-card">
+      <div class="test-index-tag">第 ${currentHistoryIndex + 1} 次测试</div>
+      <div class="b-page-desc-large">${r.desc}</div>
+      <div class="b-page-dimensions-list">
+        <div class="b-dim-section"><div class="b-dim-title">🔥 ${DIM_FULL.A.name}</div><div class="b-dim-text">${r.details.A}</div></div>
+        <div class="b-dim-section"><div class="b-dim-title">💖 ${DIM_FULL.C.name}</div><div class="b-dim-text">${r.details.C}</div></div>
+        <div class="b-dim-section"><div class="b-dim-title">🎨 ${DIM_FULL.S.name}</div><div class="b-dim-text">${r.details.S}</div></div>
+      </div>
+      <div class="b-page-name-small">—— 匹配原型：${r.name} ——</div>
+      <div class="share-hint"><p>📸 长按上方区域截图保存</p><small>你的独特魅力，值得被看见</small></div>
+    </div>
+  `;
+
+  // 🚨 页面 D: 深度解析 1-3 (E, T, D)
+  let dimHtmlD = '';
+  for (let i = 0; i < 3; i++) {
     const key = dimKeys[i], full = DIM_FULL[key], championName = r.dimChampions ? r.dimChampions[i] : '未知', score = r.scores[i], percent = (score / maxScore) * 100;
     let dimDetailText = (r.details && r.details[key]) ? r.details[key] : full.desc;
-    dimHtml += `<div class="dim-block"><div class="dim-header-row"><span class="dim-name-score">${full.name} (得分: ${score})</span><span class="dim-champion">最像: ${championName}</span></div><div class="bar-container"><div class="bar-fill" style="width: ${percent}%;"></div></div><div class="dim-desc-text">💡 ${dimDetailText}</div></div>`;
+    dimHtmlD += `<div class="dim-block"><div class="dim-header-row"><span class="dim-name-score">${full.name} (得分: ${score})</span><span class="dim-champion">最像: ${championName}</span></div><div class="bar-container"><div class="bar-fill" style="width: ${percent}%;"></div></div><div class="dim-desc-text">💡 ${dimDetailText}</div></div>`;
   }
-  container.innerHTML = `<div class="page-card"><div class="test-index-tag">第 ${currentHistoryIndex + 1} 次测试</div><div class="a-page-title">K-POP PERSONALITY ARCHIVE</div><h2 class="a-page-name">${r.name}</h2><div class="a-page-desc">${r.desc}</div><div class="radar-box"><h4>📊 六维人格雷达图</h4><canvas id="radarCanvas" width="340" height="340"></canvas></div><div class="a-page-summary"><strong>🔍 匹配依据：</strong>${r.summary || generateFallbackSummary(r.scores, r)}</div><div class="share-hint"><p>📸 长按上方区域截图保存</p><small>分享给朋友，看看是不是同一种灵魂</small></div></div><div class="page-card"><div class="test-index-tag">第 ${currentHistoryIndex + 1} 次测试</div><div class="b-page-desc-large">${r.desc}</div>${bPageHtml}<div class="share-hint"><p>📸 长按上方区域截图保存</p><small>你的独特魅力，值得被看见</small></div></div><div class="page-card"><div class="test-index-tag">第 ${currentHistoryIndex + 1} 次测试</div><div class="c-page-title">🧬 六维深度解析</div>${dimHtml}<div class="share-hint"><p>📸 长按上方区域截图保存</p><small>本档案基于你的选择生成 · 仅供趣味探索</small></div></div>`;
+  const pageD = `
+    <div class="page-card">
+      <div class="test-index-tag">第 ${currentHistoryIndex + 1} 次测试</div>
+      <div class="c-page-title">🧬 六维深度解析</div>
+      ${dimHtmlD}
+      <div class="share-hint"><p>📸 长按上方区域截图保存</p><small>本档案基于你的选择生成 · 仅供趣味探索</small></div>
+    </div>
+  `;
+
+  // 🚨 页面 E: 深度解析 4-6 (A, C, S)
+  let dimHtmlE = '';
+  for (let i = 3; i < 6; i++) {
+    const key = dimKeys[i], full = DIM_FULL[key], championName = r.dimChampions ? r.dimChampions[i] : '未知', score = r.scores[i], percent = (score / maxScore) * 100;
+    let dimDetailText = (r.details && r.details[key]) ? r.details[key] : full.desc;
+    dimHtmlE += `<div class="dim-block"><div class="dim-header-row"><span class="dim-name-score">${full.name} (得分: ${score})</span><span class="dim-champion">最像: ${championName}</span></div><div class="bar-container"><div class="bar-fill" style="width: ${percent}%;"></div></div><div class="dim-desc-text">💡 ${dimDetailText}</div></div>`;
+  }
+  const pageE = `
+    <div class="page-card">
+      <div class="test-index-tag">第 ${currentHistoryIndex + 1} 次测试</div>
+      <div class="c-page-title">🧬 六维深度解析</div>
+      ${dimHtmlE}
+      <div class="share-hint"><p>📸 长按上方区域截图保存</p><small>本档案基于你的选择生成 · 仅供趣味探索</small></div>
+    </div>
+  `;
+
+  container.innerHTML = pageA + pageB + pageC + pageD + pageE;
   setTimeout(() => { const canvas = document.getElementById('radarCanvas'); if (canvas) drawRadarOnCanvas(canvas, r.scores, r.dimChampions); }, 100);
 }
 
@@ -582,7 +658,13 @@ function generateFallbackSummary(scores, idol) { const maxDimIdx = scores.indexO
 
 function drawRadarOnCanvas(canvas, scores, champions) {
   if (!canvas || !scores) return;
-  const ctx = canvas.getContext('2d'), w = canvas.width, h = canvas.height, cx = w / 2, cy = h / 2, R = 75, maxScore = 120; // 假设最高120分
+  const ctx = canvas.getContext('2d');
+  const w = 400, h = 400; // 🚨 放大到两倍
+  canvas.width = w; canvas.height = h;
+  const cx = w / 2, cy = h / 2;
+  const R = 130; 
+  const maxScore = 120;
+  
   ctx.clearRect(0, 0, w, h);
   for (let level = 1; level <= 5; level++) {
     const r = (R / 5) * level; ctx.beginPath();
@@ -590,18 +672,34 @@ function drawRadarOnCanvas(canvas, scores, champions) {
     ctx.closePath(); ctx.strokeStyle = '#333'; ctx.lineWidth = 1; ctx.stroke();
   }
   for (let i = 0; i < 6; i++) { const a = (Math.PI * 2 / 6) * i - Math.PI / 2; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + R * Math.cos(a), cy + R * Math.sin(a)); ctx.strokeStyle = '#444'; ctx.stroke(); }
+  
   const points = []; ctx.beginPath();
   for (let i = 0; i < 6; i++) { const a = (Math.PI * 2 / 6) * i - Math.PI / 2; const r = (scores[i] / maxScore) * R; const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a); points.push({ x, y, a }); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
   ctx.closePath(); ctx.fillStyle = 'rgba(255,51,102,0.3)'; ctx.fill(); ctx.strokeStyle = '#ff3366'; ctx.lineWidth = 2; ctx.stroke();
+  
   ctx.textBaseline = 'middle';
   for (let i = 0; i < 6; i++) {
-    const p = points[i]; ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI * 2); ctx.fillStyle = '#ff3366'; ctx.fill();
-    const cos = Math.cos(p.a); ctx.textAlign = (Math.abs(cos) < 0.2) ? 'center' : (cos > 0 ? 'right' : 'left');
-    const tx = cx + (R + 18) * cos, ty = cy + (R + 18) * Math.sin(p.a);
-    ctx.font = 'bold 12px sans-serif'; ctx.fillStyle = '#ff6b9d'; ctx.fillText(DIM_NAMES[i], tx, ty - 8);
-    ctx.fillStyle = '#fff'; ctx.fillText(scores[i] + '分', tx, ty + 8);
+    const p = points[i]; 
+    ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI * 2); ctx.fillStyle = '#ff3366'; ctx.fill();
+    const cos = Math.cos(p.a); 
+    ctx.textAlign = (Math.abs(cos) < 0.2) ? 'center' : (cos > 0 ? 'right' : 'left');
+    
+    const isTop = (i === 0 || i === 1 || i === 5);
+    const tx = cx + (R + 30) * cos;
+    const ty = cy + (R + 30) * Math.sin(p.a);
     const nm = (champions && champions[i]) ? String(champions[i]).split(' ')[0] : '';
-    if (nm) { const tx2 = cx + (R + 36) * cos, ty2 = cy + (R + 36) * Math.sin(p.a); ctx.font = '10px sans-serif'; ctx.fillStyle = '#888'; ctx.fillText(nm, tx2, ty2); }
+    
+    if (isTop) {
+      // 🚨 上三个角：名字 > 维度名 > 分数 (从上到下)
+      ctx.font = 'bold 16px sans-serif'; ctx.fillStyle = '#fff'; ctx.fillText(nm, tx, ty - 30);
+      ctx.font = 'bold 13px sans-serif'; ctx.fillStyle = '#ff6b9d'; ctx.fillText(DIM_NAMES[i], tx, ty - 12);
+      ctx.font = '12px sans-serif'; ctx.fillStyle = '#888'; ctx.fillText(scores[i] + '分', tx, ty + 6);
+    } else {
+      // 🚨 下三个角：分数 > 维度名 > 名字 (从上到下，即名字在最下面)
+      ctx.font = '12px sans-serif'; ctx.fillStyle = '#888'; ctx.fillText(scores[i] + '分', tx, ty - 6);
+      ctx.font = 'bold 13px sans-serif'; ctx.fillStyle = '#ff6b9d'; ctx.fillText(DIM_NAMES[i], tx, ty + 12);
+      ctx.font = 'bold 16px sans-serif'; ctx.fillStyle = '#fff'; ctx.fillText(nm, tx, ty + 30);
+    }
   }
 }
 
